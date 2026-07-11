@@ -31,7 +31,7 @@ $line_break\
 $character\
 """
 
-right_format = """$cmd_duration"""
+right_format = """$cmd_duration$time"""
 
 # Adds a single blank line ABOVE the prompt so commands don't blur together
 add_newline = true
@@ -62,6 +62,10 @@ symbols = { Arch = " ", Unknown = " " }
 
 [time]
 disabled = false
+style = "fg:white"
+# %R shows time in 24-hour format (HH:MM). Use %r for 12-hour (HH:MM:SS AM/PM) or %T for 24-hour with seconds.
+time_format = "%R"
+format = "[  $time ]($style)"
 
 [hostname]
 disabled = false
