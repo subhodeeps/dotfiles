@@ -1,0 +1,159 @@
+"$schema" = 'https://starship.rs/config-schema.json'
+
+# ////////////////////////////////////////////////
+# FORMAT
+# ////////////////////////////////////////////////
+
+format = """
+$os\
+[](fg:black bg:blue)\
+$hostname\
+$localip\
+[](fg:blue bg:purple)\
+$username\
+[](fg:purple bg:yellow)\
+$shell\
+$shlvl\
+$sudo\
+[](fg:yellow bg:green)\
+$git_branch\
+$git_status\
+$package\
+$docker_context\
+[](fg:green bg:red)\
+$julia\
+$python\
+${custom.wolfram}\
+[](fg:red bg:black)\
+$directory\
+[](fg:black)\
+$line_break\
+$character\
+"""
+
+right_format = """$cmd_duration"""
+
+# Adds a single blank line ABOVE the prompt so commands don't blur together
+add_newline = true
+
+# ////////////////////////////////////////////////
+# MODULES
+# ////////////////////////////////////////////////
+
+[line_break]
+disabled = false
+
+[character]
+disabled = false
+# Reduced to a single space for normal proportions
+format = "$symbol " 
+success_symbol = '[:](bold fg:white)' 
+error_symbol = '[:](bold fg:red)'
+vimcmd_symbol = '[](bold fg:white)'
+vimcmd_replace_one_symbol = '[](bold fg:purple)'
+vimcmd_replace_symbol = '[](bold fg:purple)'
+vimcmd_visual_symbol = '[](bold fg:yellow)'
+
+[os]
+disabled = false
+style = "fg:white bg:black"
+format = "[$symbol]($style)"
+symbols = { Arch = " ", Unknown = " " } 
+
+[time]
+disabled = true
+
+[hostname]
+disabled = false
+ssh_only = false
+ssh_symbol =  " 󱘖 " 
+style = "fg:black bg:blue"
+format = '[$ssh_symbol]($style)[ 󰍹  $hostname ]($style)'
+
+[localip]
+disabled = false
+ssh_only = true
+style = "fg:black bg:blue"
+format = '[ 󰩟 $localipv4 ]($style)'
+
+[username]
+disabled = false
+show_always = true
+style_user = "fg:black bg:purple"
+style_root = "fg:black bg:purple"
+format = '[  ]($style)[ $user ]($style)'
+ 
+[shell]
+disabled = false
+fish_indicator = ""
+bash_indicator = "  bash "
+unknown_indicator = "  shell "
+style = "fg:black bg:yellow"
+format = "[$indicator]($style)"
+
+[shlvl]
+disabled = false
+threshold = 2
+symbol = ''
+style = "fg:black bg:yellow"
+format = "[ $symbol $shlvl ]($style)"
+
+[sudo]
+disabled = false
+symbol = '󰌆 ' 
+style = "fg:black bg:yellow"
+format = '[ $symbol ]($style)'
+
+[git_branch]
+symbol = "󰘬"
+style = "fg:black bg:green"
+format = '[ $symbol $branch ]($style)'
+
+[git_status]
+style = "bold fg:red bg:green"
+format = '[$all_status$ahead_behind ]($style)'
+
+[package]
+format = '[  $version ](fg:black bg:green)'
+
+[docker_context]
+only_with_files = true
+symbol = ""
+style = "fg:black bg:green"
+format = '[ $symbol( $context) ]($style)'
+
+# --- Scientific Workflow ---
+
+[julia]
+symbol = "ஃ "
+style = "bold fg:white bg:red"
+format = '[ $symbol$version ]($style)'
+
+[python]
+symbol = "🐍 "
+style = "bold fg:white bg:red"
+format = '[ $symbol$version ]($style)'
+
+[custom.wolfram]
+detect_extensions = ["wl", "wls", "nb", "m"]
+symbol = "🐺 "
+style = "bold fg:white bg:red"
+command = "wolfram -version" 
+format = '[ $symbol$output ]($style)'
+
+# ---------------------------
+
+[directory]
+truncation_length = 5
+truncation_symbol = "../"
+home_symbol = "~" 
+read_only = "  "
+read_only_style = "fg:red bg:black"
+style = "bold fg:white bg:black"
+format = "[ 󰉋 ]($style)[$read_only]($read_only_style)[ $path ]($style)"
+
+[cmd_duration]
+disabled = false
+style = "fg:yellow"
+format = "[ ◄ $duration ]($style)"
+min_time = 500
