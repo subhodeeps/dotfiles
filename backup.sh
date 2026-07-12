@@ -122,22 +122,35 @@ mkdir -p "$ENV_DIR"
 
 echo "Backing up Python environments..."
 
-echo "  Exporting Global Python environment..."
+# 1. Global Python (Pacman-installed)
+# This captures all the 'python-*' packages installed via pacman
+pacman -Qqe | grep "^python-" > "$ENV_DIR/global-pacman-python.txt"
+echo "  ✓ Captured global Pacman-installed Python packages"
 
-# Capture user-level global packages (~/.local/)
+# 2. User-level global packages (~/.local/)
+# Only create the file if packages actually exist
 if command -v python3 > /dev/null; then
-    python3 --version > "$ENV_DIR/global-version.txt"
-    # Suppress warnings about PEP 668 and capture frozen list
-    python3 -m pip list --user --format=freeze > "$ENV_DIR/global-requirements.txt" 2>/dev/null
-    echo "  ✓ Captured global pip packages"
+    USER_PIP_PKGS=$(python3 -m pip list --user --format=freeze 2>/dev/null)
+    if [ -n "$USER_PIP_PKGS" ]; then
+        python3 --version > "$ENV_DIR/global-version.txt"
+        echo "$USER_PIP_PKGS" > "$ENV_DIR/global-requirements.txt"
+        echo "  ✓ Captured global pip packages"
+    else
+        echo "  - No user-level pip packages found (skipping global-requirements.txt)"
+    fi
 fi
 
-# Capture pipx applications 
+# 3. Capture pipx applications
 if command -v pipx > /dev/null; then
-    pipx list --short > "$ENV_DIR/pipx-apps.txt"
-    echo "  ✓ Captured pipx applications"
+    # Check if list is empty first
+    PIPX_LIST=$(pipx list --short)
+    if [ -n "$PIPX_LIST" ]; then
+        echo "$PIPX_LIST" > "$ENV_DIR/pipx-apps.txt"
+        echo "  ✓ Captured pipx applications"
+    else
+        echo "  - No pipx applications found"
+    fi
 fi
-
 
 # Find all venv folders 
 find ~ -maxdepth 3 -name "pyvenv.cfg" -exec dirname {} \; | while read -r venv_path; do
