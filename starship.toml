@@ -28,6 +28,7 @@ ${custom.wolfram}\
 $directory\
 [](fg:black)\
 $line_break\
+$line_break\
 $character\
 """
 
