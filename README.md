@@ -7,7 +7,7 @@ A collection of configuration files for the terminal environment and desktop wor
 ## Components
 
 * **Terminal:** [Kitty](https://sw.kovidgoyal.net/kitty/)
-* **Shell:** [Zsh](https://www.zsh.org/)
+* **Shell:** [Zsh](https://www.zsh.org/) (Plugins managed via [Oh My Zsh](https://ohmyz.sh/))
 * **Prompt:** [Starship](https://starship.rs/)
 * **System Info:** [Fastfetch](https://github.com/fastfetch-cli/fastfetch)
 * **Window Management:** [Krohnkite](https://codeberg.org/anametologin/Krohnkite) (KDE Tiling Script, bindings saved in `kglobalshortcutsrc`)
