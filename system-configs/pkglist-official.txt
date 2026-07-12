@@ -169,7 +169,6 @@ powerdevil
 powertop
 print-manager
 psensor
-python-huggingface-hub
 python-pip
 python-websockets
 rclone

@@ -1,3 +1,2 @@
-python-huggingface-hub
 python-pip
 python-websockets
