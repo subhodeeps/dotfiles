@@ -92,6 +92,23 @@ SYS_DIR="$BACKUP_DIR/system-configs"
 rm -rf "$SYS_DIR"
 mkdir -p "$SYS_DIR"
 
+# Generate the README warning file dynamically
+cat << 'EOF' > "$SYS_DIR/README.md"
+# System Configurations Backup
+
+**WARNING:** Do not symlink these files directly back to `/etc/` or `/boot/`.
+These files are system-level configurations and require root ownership.
+
+## Restoration Instructions:
+1. Use `sudo cp` to restore these files to their respective locations.
+2. Ensure proper permissions are set (usually `root:root`).
+3. Run necessary post-install hooks after restoring:
+   - `sudo mkinitcpio -P` (if mkinitcpio.conf changed)
+   - `sudo bootctl update` (for systemd-boot)
+   - `sudo grub-mkconfig -o /boot/grub/grub.cfg` (if using GRUB fallback)
+EOF
+echo "✓ Generated system-configs/README.md"
+
 echo "----------------------------------------------------"
 echo "Requesting sudo password to backup system configs..."
 sudo -v
@@ -115,11 +132,20 @@ if command -v bootctl > /dev/null; then
     
     if [ -n "$ESP_PATH" ] && sudo test -d "$ESP_PATH/loader"; then
         sys_backup_dir "$ESP_PATH/loader" "$SYS_DIR" "systemd-boot loader"
+        
+        # Exclude random-seed from backup
+        sudo rm -f "$SYS_DIR/loader/random-seed"
     else
         echo "! Skipping systemd-boot (loader directory not found in $ESP_PATH)"
     fi
+fi 
+
+# 9. Installed Package List
+if command -v pacman > /dev/null; then
+    pacman -Qqe > "$SYS_DIR/installed-packages.txt"
+    echo "✓ Generated installed-packages.txt"
 else
-    echo "! Skipping systemd-boot (bootctl command not found)"
+    echo "! Skipping installed-packages.txt (pacman not found)"
 fi
 
 # 9. Installed Package List
@@ -156,7 +182,6 @@ fi
 
 # AUR Packages (requires expac)
 if command -v expac > /dev/null; then
-    # Removed the invalid 'q' flag from expac
     expac -Qe "$(pacman -Qmq)" > "$SYS_DIR/pkglist-aur.txt" 2>/dev/null
     echo "✓ Generated pkglist-aur.txt"
 else
@@ -169,11 +194,11 @@ mkdir -p "$ENV_DIR"
 
 echo "Backing up Python environments..."
 
-# 1. Global Python (Pacman-installed)
+# Global Python (Pacman-installed)
 pacman -Qqe | grep "^python-" > "$ENV_DIR/global-pacman-python.txt"
 echo "  ✓ Captured global Pacman-installed Python packages"
 
-# 2. User-level global packages (~/.local/)
+# User-level global packages (~/.local/)
 if command -v python3 > /dev/null; then
     USER_PIP_PKGS=$(python3 -m pip list --user --format=freeze 2>/dev/null)
     if [ -n "$USER_PIP_PKGS" ]; then
@@ -185,7 +210,7 @@ if command -v python3 > /dev/null; then
     fi
 fi
 
-# 3. Capture pipx applications
+# Capture pipx applications
 if command -v pipx > /dev/null; then
     PIPX_LIST=$(pipx list --short)
     if [ -n "$PIPX_LIST" ]; then
@@ -246,7 +271,7 @@ fi
 # 18. Default Applications (mimeapps.list)
 backup_file ~/.config/mimeapps.list "$BACKUP_DIR/" "mimeapps.list"
 
-# Fix ownership for files copied via sudo so git push works cleanly
+# Fix ownership for files copied via sudo to ensure standard user ownership
 sudo chown -R "$USER:$USER" "$SYS_DIR"
 
 echo "All backups completed successfully!"
