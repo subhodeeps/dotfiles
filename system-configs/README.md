@@ -2,7 +2,8 @@
 
 This directory contains configuration files for the Arch Linux environment on my ThinkPad.
 
-**WARNING: Manual restoration required. Do not use automated scripts to blindly overwrite files in `/etc/`. System-specific identifiers (e.g., UUIDs in `fstab`) must be verified and updated to match the target machine to prevent boot failure.**
+> [!CAUTION]
+> **Manual restoration is required.** Do not use automated scripts to overwrite files in `/etc/`. System-specific identifiers (e.g., UUIDs in `fstab`) must be verified and updated to match the target hardware configuration to prevent boot failure or data loss.
 
 ## 1. Boot & Hardware
 
