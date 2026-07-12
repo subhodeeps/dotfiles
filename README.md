@@ -6,11 +6,11 @@ A collection of configuration files for the terminal environment and desktop wor
 
 ## Components
 
-* **Terminal:** Kitty
-* **Shell:** Zsh
-* **Prompt:** Starship
-* **System Info:** Fastfetch
-* **Window Management:** Krohnkite (KDE Tiling Script, bindings saved in `kglobalshortcutsrc`)
+* **Terminal:** [Kitty](https://sw.kovidgoyal.net/kitty/)
+* **Shell:** [Zsh](https://www.zsh.org/)
+* **Prompt:** [Starship](https://starship.rs/)
+* **System Info:** [Fastfetch](https://github.com/fastfetch-cli/fastfetch)
+* **Window Management:** [Krohnkite](https://codeberg.org/anametologin/Krohnkite) (KDE Tiling Script, bindings saved in `kglobalshortcutsrc`)
 
 ## Management
 
