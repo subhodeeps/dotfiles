@@ -1,5 +1,3 @@
-// Designed for Arch Linux
-// Modified from: https://github.com/fastfetch-cli/fastfetch/pull/1025#issuecomment-2177566138
 {
     "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
     "logo": {
@@ -18,8 +16,8 @@
         },
         "separator": "  ",
         "constants": [
-            "───────────────────────────────────────────────────────────────",
-            "═══════════════════════════════════════════════════════════════"
+            "─────────────────────────────────────────────────",
+            "═════════════════════════════════════════════════"
         ]
     },
     "modules": [
@@ -30,34 +28,34 @@
         },
         {
             "type": "title",
-            "key": "   User     ",
+            "key": " User     ",
             "keyColor": "yellow",
-            // {#red} colors the username, {#} resets the @ symbol to default, {#yellow} colors the hostname
             "format": "{#blue}{user-name}{#}@{#red}{host-name}"
         },
         {
             "type": "host",
-            "key": "   Machine  ",
-            "keyColor": "yellow"
+            "key": " Machine  ",
+            "keyColor": "yellow",
+            "format": "{family}"
         },
         {
             "type": "os",
-            "key": "   OS       ",
+            "key": " OS       ",
             "keyColor": "yellow"
         },
         {
             "type": "kernel",
-            "key": "   Kernel   ",
+            "key": " Kernel   ",
             "keyColor": "yellow"
         },
         {
             "type": "uptime",
-            "key": "   Uptime   ",
+            "key": " Uptime   ",
             "keyColor": "yellow"
         },
         {
             "type": "command",
-            "key": "   Root Age ",
+            "key": " Root Age ",
             "keyColor": "yellow",
             "text": "stat -c %W / | awk '{ if ($1==0) print \"Unknown\"; else { days=int((systime()-$1)/86400); print strftime(\"%Y-%m-%d\",$1), \"(\"days\" days)\" }}'"
         },
@@ -68,35 +66,35 @@
         },
         {
             "type": "shell",
-            "key": "   Shell    ",
+            "key": " Shell    ",
             "keyColor": "green"
         },
         {
             "type": "terminal",
-            "key": "   Terminal ",
+            "key": " Terminal ",
             "keyColor": "green"
         },
         {
             "type": "command",
-            "key": "   GCC      ",
+            "key": " GCC      ",
             "keyColor": "green",
             "text": "gcc -dumpfullversion 2>/dev/null || echo 'Not Installed'"
         },
         {
             "type": "command",
-            "key": "   Python   ",
+            "key": " Python   ",
             "keyColor": "green",
             "text": "python3 --version 2>&1 | cut -d' ' -f2"
         },
         {
             "type": "command",
-            "key": "   Julia    ",
+            "key": " Julia    ",
             "keyColor": "green",
             "text": "julia --version 2>&1 | awk '{print $3}'"
         },
         {
             "type": "command",
-            "key": "   Wolfram  ",
+            "key": " Wolfram  ",
             "keyColor": "green",
             "text": "math -version 2>&1"
         },
@@ -107,27 +105,29 @@
         },
         {
             "type": "cpu",
-            "key": "   CPU      ",
-            "keyColor": "cyan"
+            "key": " CPU      ",
+            "keyColor": "cyan",
+            "format": "{1}"
         },
         {
             "type": "gpu",
-            "key": "   GPU      ",
-            "keyColor": "cyan"
+            "key": " GPU      ",
+            "keyColor": "cyan",
+            "format": "{1} {2}"
         },
         {
             "type": "memory",
-            "key": "   RAM      ",
+            "key": " RAM      ",
             "keyColor": "cyan"
         },
         {
             "type": "disk",
-            "key": "   Disk     ",
+            "key": " Disk     ",
             "keyColor": "cyan"
         },
         {
             "type": "battery",
-            "key": "   Battery  ",
+            "key": " Battery  ",
             "keyColor": "cyan"
         },
         {
