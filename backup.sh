@@ -24,4 +24,8 @@ rm -rf "$BACKUP_DIR/fastfetch"
 cp -r ~/.config/fastfetch "$BACKUP_DIR/"
 echo "✓ Copied Fastfetch config"
 
+# 5. KDE Global Shortcuts (for Krohnkite)
+cp ~/.config/kglobalshortcutsrc "$BACKUP_DIR/"
+echo "✓ Copied kglobalshortcutsrc (Krohnkite shortcuts)"
+
 echo "Backup complete! Ready to commit and push."
