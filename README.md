@@ -1,6 +1,6 @@
 # Dotfiles
 
-A collection of configuration files for the terminal environment.
+A collection of configuration files for the terminal environment and desktop workflow.
 
 ![Terminal Environment](screenshot/screenshot.png)
 
@@ -10,6 +10,7 @@ A collection of configuration files for the terminal environment.
 * **Shell:** Zsh
 * **Prompt:** Starship
 * **System Info:** Fastfetch
+* **Window Management:** Krohnkite (KDE Tiling Script, bindings saved in `kglobalshortcutsrc`)
 
 ## Management
 
@@ -25,4 +26,3 @@ Configurations are maintained via a local backup script (`backup.sh`). This scri
 git add .
 git commit -m "Update configurations"
 git push
-```
