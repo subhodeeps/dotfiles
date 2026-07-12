@@ -138,15 +138,32 @@ if command -v pipx > /dev/null; then
     echo "  ✓ Captured pipx applications"
 fi
 
+
 # Find all venv folders 
 find ~ -maxdepth 3 -name "pyvenv.cfg" -exec dirname {} \; | while read -r venv_path; do
-    # Gets the name of the project folder containing the venv instead of just 'venv'
-    env_name=$(basename "$(dirname "$venv_path")") 
     
-    echo "  Exporting $env_name..."
+    # Use the parent directory name AND the venv directory name to ensure uniqueness
+    # Example: ~/envs/myenv -> envs_myenv
+    # Example: ~/project/venv -> project_venv
+    parent_dir=$(basename "$(dirname "$venv_path")")
+    venv_name=$(basename "$venv_path")
+    
+    # If the parent is the home directory or something generic, just use the venv name
+    if [[ "$parent_dir" == "$HOME" || "$parent_dir" == "/" ]]; then
+        env_label="$venv_name"
+    else
+        env_label="${parent_dir}_${venv_name}"
+    fi
+    
+    echo "  Exporting $env_label..."
+    
     # Capture python version and pip list
-    "$venv_path/bin/python" --version > "$ENV_DIR/$env_name-version.txt"
-    "$venv_path/bin/pip" list --format=freeze > "$ENV_DIR/$env_name-requirements.txt"
+    if [ -f "$venv_path/bin/python" ]; then
+        "$venv_path/bin/python" --version > "$ENV_DIR/$env_label-version.txt"
+        "$venv_path/bin/pip" list --format=freeze > "$ENV_DIR/$env_label-requirements.txt"
+    else
+        echo "  ! Skipping $env_label (No python executable found)"
+    fi
 done
 
 # If we use Conda
