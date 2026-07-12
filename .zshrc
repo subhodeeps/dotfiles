@@ -141,3 +141,4 @@ eval "$(thefuck --alias)"
 # Set up fzf key bindings and fuzzy completion
 source <(fzf --zsh)
 eval "$(starship init zsh)"
+source /etc/profile.d/petsc.sh

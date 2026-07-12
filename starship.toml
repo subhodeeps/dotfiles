@@ -131,12 +131,12 @@ format = '[ $symbol( $context) ]($style)'
 [julia]
 symbol = "ஃ "
 style = "bold fg:white bg:red"
-format = '[ $symbol$version ]($style)'
+format = '[ $symbol$version( $project_name) ]($style)'
 
 [python]
 symbol = "🐍 "
 style = "bold fg:white bg:red"
-format = '[ $symbol$version ]($style)'
+format = '[ $symbol$version( \($virtualenv\)) ]($style)'
 
 [custom.wolfram]
 detect_extensions = ["wl", "wls", "nb", "m"]
