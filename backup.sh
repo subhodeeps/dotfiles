@@ -4,6 +4,10 @@
 BACKUP_DIR=~/dotfiles
 mkdir -p "$BACKUP_DIR"
 
+# Scratch/staging directory — kept out of git via .gitignore (see below)
+TMP_DIR="$BACKUP_DIR/tmp"
+mkdir -p "$TMP_DIR"
+
 # --- HELPER FUNCTIONS FOR USER FILES ---
 backup_file() {
     local src="$1"
@@ -83,6 +87,9 @@ backup_file ~/.config/kglobalshortcutsrc "$BACKUP_DIR/" "kglobalshortcutsrc (Kro
 # 6. KDE Window Manager (Krohnkite rules)
 backup_file ~/.config/kwinrc "$BACKUP_DIR/" "kwinrc"
 
+# 7. Pet (Command Snippet Manager) — config.toml + snippet.toml 
+backup_dir ~/.config/pet "$BACKUP_DIR" "pet (config & snippets)"
+
 echo "User Dotfiles Backup complete! Ready to commit and push."
 
 # Define the new system configs directory
@@ -92,57 +99,13 @@ SYS_DIR="$BACKUP_DIR/system-configs"
 rm -rf "$SYS_DIR"
 mkdir -p "$SYS_DIR"
 
-# Generate the README warning file dynamically
-cat << 'EOF' > "$SYS_DIR/README.md"
-# System Configuration Reference
+# README located in: $TMP_DIR/README_SYS.md
 
-This directory contains configuration files for the Arch Linux environment on this ThinkPad.
+README_TEMPLATE="$TMP_DIR/README_SYS.md"
 
-> [!CAUTION]
-> **MANUAL RESTORATION REQUIRED.** Do not use automated scripts to blindly overwrite system files. System-specific identifiers (e.g., UUIDs in `fstab`) must be verified against current hardware IDs to prevent boot failure. Misconfiguration of bootloaders or kernel parameters may render the system unbootable.
 
-## 1. Boot & Hardware
-* **fstab**: Contains partition mount points and options. Copy only relevant mount options (e.g., `x-systemd.automount`). **NEVER overwrite existing UUIDs** with old ones from this backup.
-* **grub**: `/etc/default/grub`. Post-restore: `sudo grub-mkconfig -o /boot/grub/grub.cfg`
-* **mkinitcpio.conf**: `/etc/mkinitcpio.conf`. Post-restore: `sudo mkinitcpio -P`
-* **throttled.conf**: CPU/Undervolt parameters. Apply via: `sudo systemctl enable --now throttled`
-* **thinkfan.conf**: Thermal control configuration. Apply via: `sudo systemctl enable --now thinkfan`
-
-## 2. Graphics
-* **optimus-manager.conf**: GPU management configuration. Ensure appropriate modes are set based on current driver state.
-
-## 3. Zram Configuration
-* **zram-generator.conf**: Zram block device parameters.
-* **99-vm-zram-parameters.conf**: Kernel `sysctl` memory parameters.
-* **Activation**:
-```bash
-sudo systemctl daemon-reload
-sudo systemctl restart systemd-zram-setup@zram0.service
-sudo sysctl --system
-```
-
-## 4. Package Management
-* **pacman.conf**: Configuration for package operations.
-* **pkglist-official.txt**: Explicitly installed packages from official repositories.
-  * *Restore*: `sudo pacman -S --needed - < pkglist-official.txt`
-* **pkglist-aur.txt**: Explicitly installed AUR packages.
-  * *Restore*: `yay -S --needed - < pkglist-aur.txt`
-
-## 5. Runtime Environments
-* **julia-global**: Contains `Project.toml` and `Manifest.toml` from `~/.julia/environments/v1.x/`.
-  * *Restore*: Place files in `~/.julia/environments/v1.x/` and run `using Pkg; Pkg.instantiate()` in the Julia REPL.
-* **python-envs**: Contains environment version markers and `pip` freeze lists.
-  * *Restore*: 
-    1. Create a virtual environment: `python -m venv myenv`
-    2. Activate: `source myenv/bin/activate`
-    3. Install requirements: `pip install -r <name>-requirements.txt`
-    4. For global user packages: `pip install --user -r global-requirements.txt`
-
-## 6. Systemd-Boot (Primary)
-Configurations located in the EFI System Partition under `/loader/`.
-* *Post-restore*: Run `sudo bootctl update` to ensure the bootloader is correctly synchronized.
-EOF
-echo "✓ Generated system-configs/README.md"
+cp "$README_TEMPLATE" "$SYS_DIR/README.md"
+echo "✓ Copied system-configs/README.md from tmp/readme.md"
 
 echo "----------------------------------------------------"
 echo "Requesting sudo password to backup system configs..."
@@ -151,10 +114,10 @@ echo "----------------------------------------------------"
 
 echo "Starting system config backup..."
 
-# 7. Optimus Manager
+# 8. Optimus Manager
 sys_backup_file /etc/optimus-manager/optimus-manager.conf "$SYS_DIR/" "optimus-manager.conf"
 
-# 8. Boot & Filesystem Mounts
+# 9. Boot & Filesystem Mounts
 sys_backup_file /etc/fstab "$SYS_DIR/" "fstab"
 sys_backup_file /etc/mkinitcpio.conf "$SYS_DIR/" "mkinitcpio.conf"
 
@@ -175,7 +138,7 @@ if command -v bootctl > /dev/null; then
     fi
 fi 
 
-# 9. Installed Package List
+# 10. Installed Package List
 if command -v pacman > /dev/null; then
     pacman -Qqe > "$SYS_DIR/installed-packages.txt"
     echo "✓ Generated installed-packages.txt"
@@ -183,30 +146,22 @@ else
     echo "! Skipping installed-packages.txt (pacman not found)"
 fi
 
-# 9. Installed Package List
-if command -v pacman > /dev/null; then
-    pacman -Qqe > "$SYS_DIR/installed-packages.txt"
-    echo "✓ Generated installed-packages.txt"
-else
-    echo "! Skipping installed-packages.txt (pacman not found)"
-fi
-
-# 10. Zram Configuration (Memory Compression)
+# 11. Zram Configuration (Memory Compression)
 sys_backup_file /etc/systemd/zram-generator.conf "$SYS_DIR/" "zram-generator.conf"
 
-# 11. Kernel Memory Tweaks (Swappiness for Zram)
+# 12. Kernel Memory Tweaks (Swappiness for Zram)
 sys_backup_file /etc/sysctl.d/99-vm-zram-parameters.conf "$SYS_DIR/" "99-vm-zram-parameters.conf"
 
-# 12. Throttled (CPU/Undervolt Power Management)
+# 13. Throttled (CPU/Undervolt Power Management)
 sys_backup_file /etc/throttled.conf "$SYS_DIR/" "throttled.conf"
 
-# 13. Pacman Configuration
+# 14. Pacman Configuration
 sys_backup_file /etc/pacman.conf "$SYS_DIR/" "pacman.conf"
 
-# 14. Thinkfan (Fan Control)
+# 15. Thinkfan (Fan Control)
 sys_backup_file /etc/thinkfan.conf "$SYS_DIR/" "thinkfan.conf"
 
-# 15. Package Manifests
+# 16. Package Manifests
 echo "Generating package lists..."
 
 # Official Repo Packages
@@ -223,7 +178,7 @@ else
     echo "! Skipping AUR list (expac not installed)"
 fi
 
-# 16. Python Environments Manifest
+# 17. Python Environments Manifest
 ENV_DIR="$SYS_DIR/python-envs"
 mkdir -p "$ENV_DIR"
 
@@ -285,7 +240,7 @@ if command -v conda > /dev/null; then
     done
 fi
 
-# 17. Global Julia Environment
+# 18. Global Julia Environment
 JULIA_GLOBAL_DIR="$SYS_DIR/julia-global"
 mkdir -p "$JULIA_GLOBAL_DIR"
 
@@ -303,10 +258,18 @@ else
     echo "! Skipping Julia: No global environment found in ~/.julia/environments"
 fi
 
-# 18. Default Applications (mimeapps.list)
+# 19. Default Applications (mimeapps.list)
 backup_file ~/.config/mimeapps.list "$BACKUP_DIR/" "mimeapps.list"
 
 # Fix ownership for files copied via sudo to ensure standard user ownership
 sudo chown -R "$USER:$USER" "$SYS_DIR"
+
+# Make sure the scratch/staging tmp/ folder never gets committed to the dotfiles repo
+GITIGNORE="$BACKUP_DIR/.gitignore"
+touch "$GITIGNORE"
+if ! grep -qxF "tmp/" "$GITIGNORE"; then
+    echo "tmp/" >> "$GITIGNORE"
+    echo "✓ Added tmp/ to .gitignore"
+fi
 
 echo "All backups completed successfully!"

@@ -1,0 +1,6 @@
+
+[[Snippets]]
+  Description = "browse installed packages with details"
+  Output = ""
+  Tag = [pacman, arch-linux]
+  command = "\u0016 pacman -Q | fzf --preview 'pacman -Qi {1}'"

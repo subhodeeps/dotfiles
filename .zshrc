@@ -109,11 +109,11 @@ source $ZSH/oh-my-zsh.sh
 # export LANG=en_US.UTF-8
 
 # Preferred editor for local and remote sessions
-# if [[ -n $SSH_CONNECTION ]]; then
-#   export EDITOR='vim'
-# else
-#   export EDITOR='nvim'
-# fi
+if [[ -n $SSH_CONNECTION ]]; then
+  export EDITOR='nano'
+else
+  export EDITOR='micro'
+fi
 
 if [[ $- == *i* ]]; then
  fastfetch 
@@ -135,10 +135,9 @@ fi
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
-
 eval "$(zoxide init zsh)"
 eval "$(thefuck --alias)"
 # Set up fzf key bindings and fuzzy completion
 source <(fzf --zsh)
 eval "$(starship init zsh)"
-source /etc/profile.d/petsc.sh
+
