@@ -1,1 +1,11 @@
+# Temporary directories
+temp/
 tmp/
+.temp/
+.tmp/
+
+# rmlint generated files
+rmlint.sh
+rmlint.json
+rmlint-*.json
+rmlint-*.sh
