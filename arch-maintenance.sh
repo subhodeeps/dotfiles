@@ -109,7 +109,6 @@ function clean_flatpak() {
         echo -e "${GREEN}Flatpak is not installed. Skipping.${NC}\n"
     fi
 }
-
 function find_and_remove() {
     echo -e "\n${YELLOW}=== Find and Remove (rmlint) ===${NC}"
     if ! command -v rmlint &> /dev/null; then
@@ -137,7 +136,21 @@ function find_and_remove() {
     fi
 
     echo "Running rmlint on your home directory..."
-    rmlint ~/
+    echo "Excluding Documents, dotfiles, and development environments..."
+    
+    # Use 'find' to select everything in ~/ EXCEPT the excluded folders and hidden files (.*)
+    # and pass the safe list to rmlint.
+    find ~/ -mindepth 1 -maxdepth 1 \
+        ! -name "Documents" \
+        ! -name "dotfiles" \
+        ! -name "venvs" \
+        ! -name "go" \
+        ! -name "charm" \
+        ! -name "spectre" \
+        ! -name "yay" \
+        ! -name ".*" \
+        -exec rmlint {} +
+        
     echo -e "${GREEN}rmlint scan complete. Review 'rmlint.sh' before executing it.${NC}\n"
 }
 
