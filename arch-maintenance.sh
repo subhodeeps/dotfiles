@@ -148,6 +148,8 @@ function find_and_remove() {
         ! -name "charm" \
         ! -name "spectre" \
         ! -name "yay" \
+        ! -name "Zotero" \
+        ! -name "scripts" \
         ! -name ".*" \
         -exec rmlint {} +
         
