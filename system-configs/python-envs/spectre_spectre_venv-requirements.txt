@@ -51,7 +51,6 @@ numpy==2.5.1
 optimus-manager==817
 orjson==3.11.9
 packaging==26.2
-petsc4py==3.25.3
 pillow==12.3.0
 pip==26.1.2
 platformdirs==4.10.0

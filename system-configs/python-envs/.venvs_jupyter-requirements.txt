@@ -87,7 +87,6 @@ packaging==26.1
 pandas==3.0.2
 pandocfilters==1.5.1
 parso==0.8.6
-petsc4py==3.25.3
 pexpect==4.9.0
 pillow==12.2.0
 pip==26.1.1

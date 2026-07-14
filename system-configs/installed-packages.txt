@@ -145,7 +145,6 @@ oxygen-sounds
 pacman-contrib
 paraview
 pet-git
-petsc
 phoronix-test-suite
 pipewire
 pipewire-alsa

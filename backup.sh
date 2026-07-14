@@ -69,28 +69,43 @@ sys_backup_dir() {
 
 echo "Starting User Dotfiles Backup..."
 
-# 1. Zsh
+# Zsh
 backup_file ~/.zshrc "$BACKUP_DIR/" ".zshrc"
 
-# 2. Starship
+# Starship
 backup_file ~/.config/starship.toml "$BACKUP_DIR/" "starship.toml"
 
-# 3. Kitty 
+# Kitty 
 backup_dir ~/.config/kitty "$BACKUP_DIR" "kitty"
 
-# 4. Fastfetch
+# Fastfetch
 backup_dir ~/.config/fastfetch "$BACKUP_DIR" "fastfetch"
 
-# 5. KDE Global Shortcuts (for Krohnkite)
+# KDE Global Shortcuts (for Krohnkite)
 backup_file ~/.config/kglobalshortcutsrc "$BACKUP_DIR/" "kglobalshortcutsrc (Krohnkite shortcuts)"
 
-# 6. KDE Window Manager (Krohnkite rules)
+# KDE Window Manager (Krohnkite rules)
 backup_file ~/.config/kwinrc "$BACKUP_DIR/" "kwinrc"
 
-# 7. Pet (Command Snippet Manager) — config.toml + snippet.toml 
+# Pet (Command Snippet Manager) — config.toml + snippet.toml 
 backup_dir ~/.config/pet "$BACKUP_DIR" "pet (config & snippets)"
 
 echo "User Dotfiles Backup complete! Ready to commit and push."
+
+# VS Code
+echo "Backing up VS Code..."
+
+backup_file ~/.config/Code/User/settings.json "$BACKUP_DIR/vscode/" "VS Code settings"
+backup_file ~/.config/Code/User/keybindings.json "$BACKUP_DIR/vscode/" "VS Code keybindings"
+
+
+# Installed extensions
+if command -v code >/dev/null; then
+    code --list-extensions | sort > "$BACKUP_DIR/vscode/extensions.txt"
+    echo "✓ Generated extensions.txt"
+else
+    echo "! Skipping VS Code extensions (code command not found)"
+fi
 
 # Define the new system configs directory
 SYS_DIR="$BACKUP_DIR/system-configs"
@@ -114,10 +129,10 @@ echo "----------------------------------------------------"
 
 echo "Starting system config backup..."
 
-# 8. Optimus Manager
+# Optimus Manager
 sys_backup_file /etc/optimus-manager/optimus-manager.conf "$SYS_DIR/" "optimus-manager.conf"
 
-# 9. Boot & Filesystem Mounts
+# Boot & Filesystem Mounts
 sys_backup_file /etc/fstab "$SYS_DIR/" "fstab"
 sys_backup_file /etc/mkinitcpio.conf "$SYS_DIR/" "mkinitcpio.conf"
 
@@ -138,7 +153,7 @@ if command -v bootctl > /dev/null; then
     fi
 fi 
 
-# 10. Installed Package List
+# Installed Package List
 if command -v pacman > /dev/null; then
     pacman -Qqe > "$SYS_DIR/installed-packages.txt"
     echo "✓ Generated installed-packages.txt"
@@ -146,22 +161,22 @@ else
     echo "! Skipping installed-packages.txt (pacman not found)"
 fi
 
-# 11. Zram Configuration (Memory Compression)
+# Zram Configuration (Memory Compression)
 sys_backup_file /etc/systemd/zram-generator.conf "$SYS_DIR/" "zram-generator.conf"
 
-# 12. Kernel Memory Tweaks (Swappiness for Zram)
+# Kernel Memory Tweaks (Swappiness for Zram)
 sys_backup_file /etc/sysctl.d/99-vm-zram-parameters.conf "$SYS_DIR/" "99-vm-zram-parameters.conf"
 
-# 13. Throttled (CPU/Undervolt Power Management)
+# Throttled (CPU/Undervolt Power Management)
 sys_backup_file /etc/throttled.conf "$SYS_DIR/" "throttled.conf"
 
-# 14. Pacman Configuration
+# Pacman Configuration
 sys_backup_file /etc/pacman.conf "$SYS_DIR/" "pacman.conf"
 
-# 15. Thinkfan (Fan Control)
+# Thinkfan (Fan Control)
 sys_backup_file /etc/thinkfan.conf "$SYS_DIR/" "thinkfan.conf"
 
-# 16. Package Manifests
+# Package Manifests
 echo "Generating package lists..."
 
 # Official Repo Packages
@@ -178,7 +193,7 @@ else
     echo "! Skipping AUR list (expac not installed)"
 fi
 
-# 17. Python Environments Manifest
+# Python Environments Manifest
 ENV_DIR="$SYS_DIR/python-envs"
 mkdir -p "$ENV_DIR"
 
@@ -240,7 +255,7 @@ if command -v conda > /dev/null; then
     done
 fi
 
-# 18. Global Julia Environment
+# Global Julia Environment
 JULIA_GLOBAL_DIR="$SYS_DIR/julia-global"
 mkdir -p "$JULIA_GLOBAL_DIR"
 
@@ -258,7 +273,7 @@ else
     echo "! Skipping Julia: No global environment found in ~/.julia/environments"
 fi
 
-# 19. Default Applications (mimeapps.list)
+# Default Applications (mimeapps.list)
 backup_file ~/.config/mimeapps.list "$BACKUP_DIR/" "mimeapps.list"
 
 # Fix ownership for files copied via sudo to ensure standard user ownership
