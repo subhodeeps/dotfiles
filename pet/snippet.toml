@@ -2,5 +2,17 @@
 [[Snippets]]
   Description = "browse installed packages with details"
   Output = ""
-  Tag = [pacman, arch-linux]
+  Tag = ["pacman", "arch-linux"]
   command = "\u0016 pacman -Q | fzf --preview 'pacman -Qi {1}'"
+
+[[Snippets]]
+  Description = "after generating the pdf, create a new bib file that stores those bib entires which were cited in the text"
+  Output = ""
+  Tag = ["latex", "bib"]
+  command = "bibexport -o cited_only.bib draft.aux"
+
+[[Snippets]]
+  Description = "after updating the system's python installation, it might be necessary to rebuilt all AUR packages using this snippet"
+  Output = ""
+  Tag = ["pacman", "arch-linux", "AUR"]
+  command = "yay -S --rebuildall $(pacman -Qm)"

@@ -1,0 +1,13 @@
+[Trigger]
+Operation = Install
+Operation = Upgrade
+Type = Package
+Target = linux
+Target = linux-lts
+Target = linux-zen
+
+[Action]
+Description = Syncing kernel files to /efi/EFI/Arch...
+Depends = coreutils
+When = PostTransaction
+Exec = /usr/bin/bash -c 'cp /boot/vmlinuz-linux /efi/EFI/Arch/ && cp /boot/initramfs-linux.img /efi/EFI/Arch/ && cp /boot/intel-ucode.img /efi/EFI/Arch/'

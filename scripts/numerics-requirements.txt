@@ -1,0 +1,71 @@
+# numerics-requirements.txt
+
+# Core numerical computing
+numpy
+scipy
+numba
+numexpr
+
+# GPU and High-Performance
+cupy-cuda12x
+jax[cuda13]
+# jax-metal
+mpi4py
+
+# Differential Equations & Spectral Methods
+dedalus
+# scikits.odes
+
+# Data analysis
+pandas
+xarray
+dask
+
+# Visualization
+matplotlib
+seaborn
+plotly
+# pyvista
+# yt
+
+# Symbolic Mathematics
+sympy
+uncertainties
+
+# Arbitrary-Precision Math
+mpmath
+
+# Storage
+h5py
+tables
+zarr
+
+# Astrophysics
+astropy
+
+
+# Interoperability
+juliacall
+wolframclient
+
+# Parallelism
+joblib
+psutil
+
+# Statistics and inference
+statsmodels
+scikit-learn
+emcee
+corner
+lmfit
+
+# Terminal & Formatting
+tabulate
+prettytable
+rich
+tqdm
+
+# Jupyter
+jupyterlab
+ipykernel
+ipywidgets

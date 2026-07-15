@@ -90,22 +90,50 @@ backup_file ~/.config/kwinrc "$BACKUP_DIR/" "kwinrc"
 # Pet (Command Snippet Manager) — config.toml + snippet.toml 
 backup_dir ~/.config/pet "$BACKUP_DIR" "pet (config & snippets)"
 
-echo "User Dotfiles Backup complete! Ready to commit and push."
+# User Scripts Directory
+backup_dir ~/scripts "$BACKUP_DIR" "scripts"
 
 # VS Code
 echo "Backing up VS Code..."
 
-backup_file ~/.config/Code/User/settings.json "$BACKUP_DIR/vscode/" "VS Code settings"
-backup_file ~/.config/Code/User/keybindings.json "$BACKUP_DIR/vscode/" "VS Code keybindings"
-
+backup_file ~/.config/Code/User/settings.json "$BACKUP_DIR/vscode/settings.json" "VS Code settings"
+backup_file ~/.config/Code/User/keybindings.json "$BACKUP_DIR/vscode/keybindings.json" "VS Code keybindings"
 
 # Installed extensions
 if command -v code >/dev/null; then
+    # Create the directory explicitly just in case it doesn't exist yet
+    mkdir -p "$BACKUP_DIR/vscode"
     code --list-extensions | sort > "$BACKUP_DIR/vscode/extensions.txt"
     echo "✓ Generated extensions.txt"
 else
     echo "! Skipping VS Code extensions (code command not found)"
 fi
+
+# Zotero
+echo "Backing up Zotero configs and extensions list..."
+ZOTERO_DIR="$BACKUP_DIR/zotero"
+mkdir -p "$ZOTERO_DIR"
+
+# Find the default profile directory (handles random string profile names)
+ZOTERO_PROFILE=$(find ~/.zotero/zotero -maxdepth 1 -type d -name "*.default*" | head -n 1)
+
+if [ -n "$ZOTERO_PROFILE" ] && [ -d "$ZOTERO_PROFILE" ]; then
+    # Back up main preferences
+    backup_file "$ZOTERO_PROFILE/prefs.js" "$ZOTERO_DIR/" "Zotero prefs.js"
+    
+    # Generate list of installed extensions
+    if [ -d "$ZOTERO_PROFILE/extensions" ]; then
+        ls -1 "$ZOTERO_PROFILE/extensions" > "$ZOTERO_DIR/extensions.txt"
+        echo "✓ Generated Zotero extensions.txt"
+    else
+        echo "  - No Zotero extensions found"
+    fi
+else
+    echo "! Skipping Zotero (No profile found in ~/.zotero/zotero)"
+fi
+
+
+echo "User Dotfiles Backup complete! Ready to commit and push."
 
 # Define the new system configs directory
 SYS_DIR="$BACKUP_DIR/system-configs"
@@ -172,6 +200,9 @@ sys_backup_file /etc/throttled.conf "$SYS_DIR/" "throttled.conf"
 
 # Pacman Configuration
 sys_backup_file /etc/pacman.conf "$SYS_DIR/" "pacman.conf"
+
+# Pacman Hooks (This captures 99-sync-kernel.hook and any others)
+sys_backup_dir /etc/pacman.d/hooks "$SYS_DIR" "pacman hooks"
 
 # Thinkfan (Fan Control)
 sys_backup_file /etc/thinkfan.conf "$SYS_DIR/" "thinkfan.conf"

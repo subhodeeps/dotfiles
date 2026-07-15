@@ -1,0 +1,8 @@
+arxiv@allanchain.github.com.xpi
+attachmentscanner@changlab.um.edu.mo.xpi
+delitemwithatt@redleaf.me.xpi
+reading-list@hotmail.com.xpi
+zoplicate@chenglongma.com.xpi
+zoteroAddons@ytshen.com.xpi
+zoteroinspire@itp.ac.cn.xpi
+zotmeta@roadtodream.tech.xpi

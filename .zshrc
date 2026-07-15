@@ -102,6 +102,7 @@ source $ZSH/oh-my-zsh.sh
 # RPROMPT="%F{green}%*%f"
 
 # User configuration
+export EDITOR=micro
 
 # export MANPATH="/usr/local/man:$MANPATH"
 
@@ -141,5 +142,5 @@ eval "$(thefuck --alias)"
 # Set up fzf key bindings and fuzzy completion
 source <(fzf --zsh)
 eval "$(starship init zsh)"
-source /etc/profile.d/petsc.sh
-export EDITOR=micro
+
+

@@ -4,6 +4,7 @@ atuin
 base
 base-devel
 bat
+biber
 blaze
 bluedevil
 brave-bin
@@ -117,6 +118,7 @@ linux-lts-headers
 lsd
 lshw
 man-db
+marksman-git
 mesa-utils
 micro
 nano
@@ -144,6 +146,8 @@ oxygen
 oxygen-sounds
 pacman-contrib
 paraview
+perl-file-homedir
+perl-yaml-tiny
 pet-git
 phoronix-test-suite
 pipewire
@@ -174,6 +178,7 @@ rclone
 rebuild-detector
 reflector
 rmlint
+ruby
 s-tui
 samba
 sane
@@ -190,9 +195,12 @@ sudo
 system-config-printer
 terminus-font
 texlive-basic
+texlive-doc
 texlive-fontsrecommended
+texlive-langenglish
 texlive-latex
 texlive-latexextra
+texlive-meta
 texlive-plaingeneric
 thefuck
 thinkfan
