@@ -1,14 +1,13 @@
-continue.continue
 davidanson.vscode-markdownlint
 donjayamanne.githistory
-eamodio.gitlens
+dracula-theme.theme-dracula
+emmanuelbeziat.vscode-great-icons
 esbenp.prettier-vscode
 github.vscode-pull-request-github
 james-yu.latex-workshop
 julialang.language-julia
 mathematic.vscode-latex
 mechatroner.rainbow-csv
-ms-azuretools.vscode-containers
 ms-python.debugpy
 ms-python.python
 ms-python.vscode-pylance

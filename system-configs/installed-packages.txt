@@ -77,6 +77,7 @@ kwallet-pam
 kwalletmanager
 kwin-x11
 kwrited
+lact
 lib32-aalib
 lib32-cdparanoia
 lib32-giflib

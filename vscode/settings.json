@@ -5,7 +5,7 @@
     "julia.symbolCacheDownload": true,
     "julia.enableCrashReporter": true,
     "julia.enableTelemetry": true,
-    "workbench.iconTheme": "vscode-icons",
+    "workbench.iconTheme": "vscode-great-icons",
     "[csv]": {
         "editor.inlayHints.maximumLength": 0
     },
@@ -37,7 +37,8 @@
     "github.copilot.nextEditSuggestions.eagerness": "low",
     "continue.enableNextEdit": false,
     "continue.enableTabAutocomplete": true,
-    "terminal.integrated.fontFamily": "JetBrainsMonoNL Nerd Font Mono"
+    "terminal.integrated.fontFamily": "JetBrainsMonoNL Nerd Font Mono",
+    "workbench.colorTheme": "Dracula Theme Soft"
 
 
 }
