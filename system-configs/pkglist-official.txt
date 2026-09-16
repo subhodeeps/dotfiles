@@ -7,17 +7,16 @@ bat
 biber
 blaze
 bluedevil
-brave-bin
 breeze-gtk
 breeze-plymouth
 btop
 btrfs-progs
 caffeine-ng
-calibre-bin
 catch2
 cava
 ccache
 clang
+code
 cuda
 cudnn
 cups
@@ -26,16 +25,19 @@ discover
 dnsmasq
 dolphin
 dool
+dosfstools
 doxygen
 drkonqi
 efibootmgr
 eigen
 evince
+exfatprogs
 expac
 fastfetch
 ffmpegthumbs
 firefox
 flatpak-kcm
+flatseal
 fprintd
 fwupd
 fzf
@@ -70,7 +72,6 @@ kinfocenter
 kitty
 konsole
 krdp
-krokiet
 kscreen
 ksshaskpass
 kwallet-pam
@@ -131,6 +132,7 @@ nmon
 noto-fonts-cjk
 noto-fonts-extra
 nss-mdns
+ntfs-3g
 nvidia-open-dkms
 nvidia-prime
 nvidia-settings
@@ -150,7 +152,6 @@ paraview
 perl-file-homedir
 perl-yaml-tiny
 pet-git
-phoronix-test-suite
 pipewire
 pipewire-alsa
 pipewire-pulse
@@ -215,7 +216,6 @@ ufw
 unarchiver
 unrar
 virtualgl
-visual-studio-code-bin
 vlc
 vlc-plugin-ffmpeg
 vnstat
@@ -223,6 +223,7 @@ vulkan-intel
 vulkan-tools
 wacomtablet
 wayland-protocols
+wget
 wine-gecko
 wine-staging
 winetricks
@@ -232,7 +233,7 @@ xf86-video-intel
 xorg-xinit
 xpad
 yay
-zotero
+zotero-bin
 zoxide
 zram-generator
 zsh
