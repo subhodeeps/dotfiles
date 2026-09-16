@@ -1,112 +1,5 @@
 
 ==================================================
-PACKAGE: caffeine-ng
-==================================================
-# Maintainer: Hugo Osvaldo Barrera <hugo@barrera.io>
-
-pkgname=caffeine-ng
-pkgver=4.3.2
-pkgrel=2
-pkgdesc="Status bar application able to temporarily inhibit the screensaver and sleep mode."
-arch=(any)
-url="https://codeberg.org/WhyNotHugo/caffeine-ng"
-license=("GPL-3.0-or-later")
-depends=(
-  python-gobject
-  python-xdg
-  python-dbus
-  python-click
-  python-ewmh
-  gtk3
-  libnotify
-  python-setproctitle
-  python-wheel
-  python-pulsectl
-  libindicator-gtk3
-  libayatana-appindicator
-)
-optdepends=(
-  # "libappindicator-gtk3: AppIndicator support (eg: Plasma, Unity)."
-  "xfconf: Support for Xfce presentation mode."
-)
-makedepends=(
-  git
-  meson
-  scdoc
-)
-conflicts=(caffeine caffeine-bzr caffeine-oneclick caffeine-systray)
-provides=(caffeine caffeine-bzr caffeine-oneclick caffeine-systray)
-replaces=(caffeine-oneclick caffeine-systray)
-#source=("https://codeberg.org/WhyNotHugo/caffeine-ng/releases/download/v${pkgver}/caffeine-ng-v${pkgver}.tar.gz")
-# As per AUR comment from upstream author, tagged versions can be considered "releases"
-source=("https://codeberg.org/WhyNotHugo/${pkgname}/archive/v${pkgver}.tar.gz")
-sha512sums=('96e9c65d1e9094ddc8f4fe59880280b0a3860b829d473e15a05fba9a3406bb1a1aaac55914ac7703064e15fc57a0e149c0217352512e9162af69a66d9149e8db')
-
-build() {
-  cd "$srcdir/caffeine-ng"
-  arch-meson . build
-  meson compile -C build
-}
-
-check() {
-  cd "$srcdir/caffeine-ng"
-  meson test --no-rebuild --print-errorlogs -C build
-}
-
-package() {
-  cd "$srcdir/caffeine-ng"
-  DESTDIR="$pkgdir" meson install --no-rebuild -C build
-}
-
-==================================================
-PACKAGE: juliaup
-==================================================
-# Maintainer: Simeon Schaub <simeondavidschaub99@gmail.com>
-pkgname=juliaup
-pkgver=1.20.4
-pkgrel=1
-pkgdesc="An experimental Julia version manager"
-arch=('x86_64' 'x86' 'aarch64')
-url="https://github.com/JuliaLang/juliaup"
-license=('MIT')
-depends=()
-makedepends=('rust')
-checkdepends=()
-optdepends=()
-provides=('julia')
-conflicts=('julia' 'julia-bin')
-source=("$url/archive/refs/tags/v$pkgver.tar.gz")
-md5sums=('d3a02e0301ca8c3a6c10daf0aecb1b87')
-options=(!lto) # ref https://github.com/briansmith/ring/issues/1444
-
-build() {
-  cd "${srcdir}/$pkgname-$pkgver"
-  cargo build --release --bin juliaup --bin julialauncher --features binjulialauncher --target-dir ./target
-}
-
-package() {
-  install -Dm644 "${srcdir}/$pkgname-$pkgver/LICENSE" "${pkgdir}/usr/share/licenses/juliaup/LICENSE"
-  install -Dm755 "${srcdir}/$pkgname-$pkgver/target/release/juliaup" "${pkgdir}/usr/bin/juliaup"
-  install -Dm755 "${srcdir}/$pkgname-$pkgver/target/release/julialauncher" "${pkgdir}/usr/bin/julialauncher"
-  ln --relative -s "${pkgdir}/usr/bin/julialauncher" "${pkgdir}/usr/bin/julia"
-
-  # Generate completion files.
-  mkdir -p "$pkgdir/usr/share/bash-completion/completions"
-  "$pkgdir"/usr/bin/juliaup completions bash > "$pkgdir/usr/share/bash-completion/completions/juliaup"
-  mkdir -p "$pkgdir/usr/share/fish/vendor_completions.d"
-  "$pkgdir"/usr/bin/juliaup completions fish > "$pkgdir/usr/share/fish/vendor_completions.d/juliaup.fish"
-  mkdir -p "$pkgdir/usr/share/zsh/site-functions"
-  "$pkgdir"/usr/bin/juliaup completions zsh > "$pkgdir/usr/share/zsh/site-functions/_juliaup"
-}
-
-# vim: ts=2 sw=2 et:
-
-==================================================
-PACKAGE: lib32-gst-plugins-base-libs
-==================================================
-[!] Error fetching PKGBUILD. The package might be a split package or removed.
-
-==================================================
 PACKAGE: lib32-gstreamer
 ==================================================
 # Maintainer: Patrick Northon <northon_patrick3@yahoo.ca>
@@ -120,7 +13,7 @@ pkgname=(
   lib32-gst-plugins-base
   lib32-gst-plugins-good
 )
-pkgver=1.28.5
+pkgver=1.28.7
 pkgrel=1
 pkgdesc="Multimedia graph framework (32-bit)"
 url="https://gstreamer.freedesktop.org/"
@@ -192,7 +85,7 @@ source=(
   "git+https://gitlab.freedesktop.org/gstreamer/gstreamer.git?signed#tag=$pkgver"
   0001-HACK-meson-Disable-broken-tests.patch
 )
-b2sums=('af4c921e40f58cd61d62dfc1420dfd4d9c0b678f8c17f9504b5f3b6fdbdbd81139a9e5c4397453795ab9fd57f6212f3eee672fc27ad37a4c2f241560dec5c1cd'
+b2sums=('1ec502cf77daffc5886cb4c315d00272d4fcea68fdd2ad3796655b20d35ecbe493d9322fecffa550bfccaa74b7d6391ba54aae60aa2fb697244c83a9227baf9b'
         'f6c0042f2d171d93f3aadc5fed50fa4a83a901371ce914cb44d614ac0510e0c5c2e10334a9011acad80f86ab08d7a953cce8d331660bca49bbfcaabbce9bee6b')
 validpgpkeys=(
   D637032E45B8C6585B9456565D2EEE6F6F349D7C # Tim Müller <tim@gstreamer-foundation.org>
@@ -520,824 +413,58 @@ package_lib32-gst-plugins-good() {
 # vim:set sw=2 sts=-1 et:
 
 ==================================================
-PACKAGE: lib32-gstreamer-debug
+PACKAGE: lib32-gst-plugins-base-libs
 ==================================================
 [!] Error fetching PKGBUILD. The package might be a split package or removed.
 
 ==================================================
-PACKAGE: libfprint-1
+PACKAGE: lib32-orc
 ==================================================
-# Maintainer: Sam Toxopeus <sam@toxopeus.it>
-# Contributor: gborzi <gborzi@ieee.org>
-# Contributor: Jan Alexander Steffens (heftig) <jan.steffens@gmail.com>
-# Contributor: Tom Gundersen <teg@jklm.no>
-# Contributor: Thomas Baechler <thomas@archlinux.org>
+# Maintainer: Patrick Northon <northon_patrick3@yahoo.ca>
+# Contributor: Maxime Gauduin <alucryd@archlinux.org>
+# Contributor: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
 
-pkgname=libfprint-1
-_pkgname=libfprint
-pkgver=1.0
-pkgrel=2
-pkgdesc="Library for fingerprint readers - old stable version"
+pkgname=lib32-orc
+pkgver=0.4.44
+pkgrel=1
+pkgdesc="Optimized Inner Loop Runtime Compiler (32-bit)"
+url="https://gstreamer.freedesktop.org/modules/orc.html"
 arch=(x86_64)
-url="https://fprint.freedesktop.org/"
-license=(LGPL)
-depends=(libusb nss pixman glib2)
-makedepends=(git meson gtk-doc systemd)
-provides=('libfprint=1.0')
-groups=(fprint)
-_commit=823f2c1067a27deae4153dd9ece6ce24bedc0680  # tags/V_1_0^0
-source=("git+https://gitlab.freedesktop.org/libfprint/libfprint.git#commit=$_commit")
-sha256sums=('SKIP')
-
-pkgver() {
-  cd $_pkgname
-  git describe --tags | sed 's/^V_//;s/_/./g;s/-/+/g'
-}
-
-prepare() {
-  cd $_pkgname
-}
-
-build() {
-  arch-meson $_pkgname build -D x11-examples=false -D gtk-examples=false
-  ninja -C build
-}
-
-check() {
-  meson test -C build
-}
-
-package() {
-  DESTDIR="$pkgdir" meson install -C build
-}
-
-==================================================
-PACKAGE: litehtml0.9
-==================================================
-[!] Error fetching PKGBUILD. The package might be a split package or removed.
-
-==================================================
-PACKAGE: marksman-git
-==================================================
-# Maintainer: Rubin Simons <me@rubin55.org>
-
-_sdk=10.0
-_branch=main
-_pkgname=marksman
-pkgname=${_pkgname}-git
-pkgver=r516.4340227
-pkgrel=2
-pkgdesc="Write Markdown with code assist and intelligence in the comfort of your favourite editor."
-arch=('x86_64' 'aarch64')
-url="https://github.com/artempyanykh/${_pkgname}"
-license=('GPL')
-makedepends=("dotnet-sdk-${_sdk}" "git")
-depends=("dotnet-runtime-${_sdk}")
-source=("${pkgname}::git+${url}.git#branch=${_branch}" "use-net10.patch")
-sha256sums=('SKIP' 'SKIP')
-
-pkgver() {
-	cd "${srcdir}/${pkgname}"
-	printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
-}
-
-build() {
-  cd "${srcdir}/${pkgname}"
-  cat "${srcdir}/use-net10.patch" | patch -p1
-  # Disable dotnet telemetry
-  export DOTNET_CLI_TELEMETRY_OPTOUT=1
-
-  dotnet build --configuration Release Marksman.sln
-  dotnet publish --configuration Release Marksman.sln --output "$PWD"/publish
-}
-
-package() {
-  mkdir -p "$pkgdir"/usr/lib
-  mkdir -p "$pkgdir"/usr/bin
-  cp -dr --no-preserve='ownership' ${pkgname}/publish "$pkgdir"/usr/lib/marksman
-
-  ln -s /usr/lib/marksman/marksman "$pkgdir"/usr/bin/marksman
-}
-
-==================================================
-PACKAGE: optimus-manager-git
-==================================================
-#! /bin/bash
-
-pkgname="optimus-manager-git"
-install="optimus-manager.install"
-pkgdesc="Allows using Nvidia Optimus laptop graphics"
-license=("MIT")
-
-#  PKGBUILD and program maintained at:
-url="https://github.com/Askannz/optimus-manager"
-
-epoch=4
-pkgver=0
-pkgrel=1
-arch=("any")
-
-source=("git+${url}.git")
-sha1sums=("SKIP")
-
-
-SoftwareVersion="$(
-	if ! cd "${srcdir}/optimus-manager" 2> /dev/null; then
-		echo 0
-	else
-		local Commits; Commits="$(git rev-list --count HEAD)"
-
-		if [[ -n "${Commits}" ]]; then
-			if [[ "${Commits}" -le 1 ]]; then
-				echo 0
-			else
-				echo "${Commits}"
-			fi
-		fi
-	fi
-)"
-
-
-PythonVersion="$(
-	pacman --sync --nodeps --nodeps --print-format "%v" python |
-	cut --delimiter='-' --fields=1
-)"
-
-
-pkgver () {
-	if [[ -z "${SoftwareVersion}" ]]; then
-		echo "Failed to retrieve: SoftwareVersion" >&2
-		false
-	elif [[ -z "${PythonVersion}" ]]; then
-		echo "Failed to retrieve: PythonVersion" >&2
-		false
-	else
-		printf "%s.python%s" \
-			"${SoftwareVersion}" \
-			"${PythonVersion}"
-	fi
-}
-
-
-conflicts=(
-	"bumblebee"
-	"envycontrol"
-	"nvidia-exec"
-	"nvidia-switch"
-	"nvidia-xrun"
-	"optimus-manager"
-	"switcheroo-control"
-)
-
-
-provides=(
-	"optimus-manager=${epoch}:${pkgver}"
-)
-
-
-makedepends=(
-	"git"
-	"python-build"
-	"python-installer"
-	"python-setuptools"
-	"python-wheel"
-)
-
-
+license=(BSD-3-Clause)
 depends=(
-	"dbus-python"
-	"glxinfo"
-	"NVIDIA-MODULE"
-	"python"
-	"xorg-xrandr"
-)
-
-
-optdepends=(
-	'gdm-prime: needed if your login screen is gdm'
-	'bbswitch: alternatively switches GPUs by using standard Optimus ACPI calls'
-	'acpi_call: alternatively switches GPUs by brute forcing ACPI calls'
-)
-
-
-backup=(
-	'etc/optimus-manager/nvidia-enable.sh'
-	'etc/optimus-manager/nvidia-disable.sh'
-	'etc/optimus-manager/optimus-manager.conf'
-	'etc/optimus-manager/xorg/integrated-mode/integrated-gpu.conf'
-	'etc/optimus-manager/xorg/nvidia-mode/integrated-gpu.conf'
-	'etc/optimus-manager/xorg/nvidia-mode/nvidia-gpu.conf'
-	'etc/optimus-manager/xorg/hybrid-mode/integrated-gpu.conf'
-	'etc/optimus-manager/xorg/hybrid-mode/nvidia-gpu.conf'
-	'etc/optimus-manager/xsetup-integrated.sh'
-	'etc/optimus-manager/xsetup-nvidia.sh'
-	'etc/optimus-manager/xsetup-hybrid.sh'
-	'var/lib/optimus-manager/persistent/startup_mode'
-)
-
-
-prepare () {
-	sed --in-place \
-		"s|^VERSION = \".*\"$|VERSION = \"${SoftwareVersion}\"|" \
-		"${srcdir}/optimus-manager/optimus_manager/envs.py"
-}
-
-
-build () {
-	cd "${srcdir}/optimus-manager"
-	python3 setup.py build
-}
-
-
-package () {
-	PackageFiles
-	GeneratePyCache
-}
-
-
-PackageFiles () {
-	PackageDefaultConf
-	PackageEtc
-	PackageLicense
-	PackageLoginManagers
-	PackageManual
-	PackageModprobe
-	PackageProfile
-	PackageSystemd
-}
-
-
-PackageDefaultConf () {
-	install -Dm644 \
-		"${srcdir}/optimus-manager/optimus-manager.conf" \
-		"${pkgdir}/usr/share/optimus-manager/optimus-manager.conf"
-}
-
-
-PackageEtc () {
-	cd "${srcdir}/optimus-manager/config"
-
-	local Etc="${pkgdir}/etc/optimus-manager"
-	local File
-	local Files; readarray -t Files < <(
-		find . -type f |
-		cut --delimiter='/' --fields=2-
-	)
-
-	for File in "${Files[@]}"; do
-		if echo "${File}" | grep --quiet --extended-regexp ".sh|.py"; then
-			local Permissions=755
-		else
-			local Permissions=644
-		fi
-
-		install -Dm"${Permissions}" "${File}" "${Etc}/${File}"
-	done
-}
-
-
-PackageLicense () {
-	install -Dm644 \
-		"${srcdir}/optimus-manager/LICENSE" \
-		"${pkgdir}/usr/share/licenses/$pkgname/LICENSE"
-}
-
-
-PackageLoginManagers () {
-	cd "${srcdir}/optimus-manager"
-
-	install -Dm644 \
-		login_managers/lightdm/20-optimus-manager.conf  \
-		"${pkgdir}/etc/lightdm/lightdm.conf.d/20-optimus-manager.conf"
-
-	install -Dm644 \
-		login_managers/sddm/20-optimus-manager.conf \
-		"${pkgdir}/etc/sddm.conf.d/20-optimus-manager.conf"
-}
-
-
-PackageManual () {
-	install -Dm644 \
-		"${srcdir}/optimus-manager/optimus-manager.1" \
-		"${pkgdir}/usr/share/man/man1/optimus-manager.1"
-}
-
-
-PackageModprobe () {
-	install -Dm644 \
-		"${srcdir}/optimus-manager/modules/optimus-manager.conf" \
-		"${pkgdir}/usr/lib/modprobe.d/optimus-manager.conf"
-}
-
-
-PackageProfile () {
-	install -Dm644 \
-		"${srcdir}/optimus-manager/profile.d/optimus-manager.sh" \
-		"${pkgdir}/etc/profile.d/optimus-manager.sh"
-}
-
-
-PackageSystemd () {
-	cd "${srcdir}/optimus-manager"
-
-	install -Dm644 \
-		"systemd/optimus-manager.service" \
-		"${pkgdir}/usr/lib/systemd/system/optimus-manager.service"
-
-	install -Dm755 \
-		"systemd/suspend/optimus-manager.py" \
-		"${pkgdir}/usr/lib/systemd/system-sleep/optimus-manager.py"
-}
-
-
-GeneratePyCache () {
-	cd "${srcdir}/optimus-manager"
-
-	python3 setup.py install \
-		--root="${pkgdir}" \
-		--optimize=1 \
-		--skip-build
-}
-
-==================================================
-PACKAGE: pet-git
-==================================================
-# Maintainer: NAME <EMAIL>
-pkgname=pet-git
-pkgver=0.9.1
-pkgrel=1
-pkgdesc='Simple command-line snippet manager, written in Go.'
-arch=('i686' 'x86_64')
-url='https://github.com/knqyf263/pet'
-license=('MIT')
-depends=('fzf')
-makedepends=('go' 'git')
-provides=('pet')
-conflicts=('pet')
-source=("git+https://github.com/knqyf263/pet.git")
-sha256sums=('SKIP')
-
-pkgver() {
-  date +%Y%m%d
-}
-
-prepare() {
-  cd pet
-  mkdir -p build/
-}
-
-build() {
-  cd pet
-  export CGO_CPPFLAGS="${CPPFLAGS}"
-  export CGO_CFLAGS="${CFLAGS}"
-  export CGO_CXXFLAGS="${CXXFLAGS}"
-  export CGO_LDFLAGS="${LDFLAGS}"
-  export GOFLAGS="-buildmode=pie -trimpath -ldflags=-linkmode=external -mod=readonly -modcacherw"
-
-  go build -o build/pet
-}
-
-package() {
-  cd pet
-  install -Dm755 build/pet "$pkgdir/usr/bin/pet"
-
-  # Install license
-  install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
-
-  # Install shell completions
-  cd misc/completions/zsh/
-  install -Dm755 -d "$pkgdir/usr/share/zsh/site-functions"
-  install -Dm644 _* "$pkgdir/usr/share/zsh/site-functions/"
-}
-
-==================================================
-PACKAGE: python-ewmh
-==================================================
-# Maintainer:
-# Contributor: Hugo Osvaldo Barrera <hugo@barrera.io>
-# Contributor: Felix Yan <felixonmars@archlinux.org>
-
-_module="ewmh"
-_pkgname="python-$_module"
-pkgname="$_pkgname"
-pkgver=0.1.6
-pkgrel=8
-pkgdesc="Python implementation of EWMH (Extended Window Manager Hints)"
-url="https://github.com/parkouss/pyewmh"
-license=('LGPL-3.0-only')
-arch=('any')
-
-depends=(
-  'python'
-  'python-xlib'
+  'lib32-gcc-libs'
+  'lib32-glibc'
+  'orc'
 )
 makedepends=(
-  'python-build'
-  'python-installer'
-  'python-setuptools'
-  'python-wheel'
-)
-
-_pkgsrc="$_module-$pkgver"
-_pkgext="tar.gz"
-source=("$_pkgsrc.$_pkgext"::"https://files.pythonhosted.org/packages/source/${_module::1}/$_module/$_pkgsrc.$_pkgext")
-sha256sums=('c56b093f7d575181e979bb3a7d15c34065755f811c351ff0a31fede12b09343d')
-
-build() {
-  cd "$_pkgsrc"
-  python -m build --wheel --no-isolation --skip-dependency-check
-}
-
-package() {
-  cd "$_pkgsrc"
-  python -m installer --destdir="$pkgdir" dist/*.whl
-}
-
-==================================================
-PACKAGE: python-pulsectl
-==================================================
-# Maintainer: TheEdgeOfRage <archlinux@theedgeofrage.com>
-# Contributor: Mark Wagie <mark dot wagie at proton dot me>
-# Contributor: WorMzy Tykashi <wormzy.tykashi@gmail.com>
-pkgname=python-pulsectl
-_name=${pkgname#python-}
-pkgver=24.12.0
-pkgrel=1
-epoch=1
-pkgdesc="Python high-level interface and ctypes-based bindings for PulseAudio (libpulse)"
-arch=('any')
-url="https://github.com/mk-fg/python-pulse-control"
-license=('MIT')
-depends=('python' 'libpulse')
-makedepends=('python-build' 'python-installer' 'python-setuptools' 'python-wheel')
-conflicts=('python-pulse-control')
-source=("https://files.pythonhosted.org/packages/source/${_name::1}/$_name/$_name-$pkgver.tar.gz")
-sha256sums=('288d6715232ac6f3dcdb123fbecaa2c0b9a50ea4087e6e87c3f841ab0a8a07fc')
-
-build() {
-  cd "$_name-$pkgver"
-  python -m build --wheel --no-isolation
-}
-
-package() {
-  cd "$_name-$pkgver"
-  python -m installer --destdir="$pkgdir" dist/*.whl
-
-  install -Dm644 COPYING -t "$pkgdir/usr/share/licenses/$pkgname/"
-}
-
-==================================================
-PACKAGE: rmlint
-==================================================
-# Maintainer: envolution
-# Contributer: Blisfull <narthana.epa@gmail.com>
-# Contributer: SahibBommelig <sahib@online.de>
-# Contributor: tee < teeaur at duck dot com >
-# shellcheck shell=bash disable=SC2034,SC2154
- 
-pkgname=rmlint
-pkgver=2.10.3
-pkgrel=7
-pkgdesc="remove duplicates and other lint (without-gui)"
-arch=('i686' 'x86_64')
-url="https://github.com/sahib/rmlint"
-license=('GPL-3.0-only')
-depends=(
-  glib2
-  glibc
-  libelf
-  python
-  json-glib
-  util-linux-libs
-)
-
-makedepends=(
-  scons
-  gettext
-  python-sphinx
-  python-sphinx-bootstrap-theme
-)
-
-checkdepends=(
-  python-psutil
-  python-pytest
-  python-xattr
-  python-pygal
-  python-tests
-  python-utils
-  btrfs-progs
-  patchelf
-  man-db
-  dash
-)
-
-source=("$pkgname-$pkgver.tar.gz::$url/archive/v${pkgver}.tar.gz")
-sha256sums=('8ffdbd5d09d15c8717ae55497e90d6fa46f085b45ac1056f2727076da180c33e')
- 
-prepare() {
-    cd "${srcdir}/${pkgname}-${pkgver}"
-    #build with shared libs
-    sed -i -E 's/env\.Library/env\.SharedLibrary/' lib/SConscript
-    sed -i -E "s/INSTALL_LIBRARY = False/INSTALL_LIBRARY = True/" lib/SConscript
-}
-build() {
-	  [[ $MAKEFLAGS =~ -j[[:space:]]*([0-9]+) ]] &&
-    _jval="${BASH_REMATCH[1]}" || _jval=1
-    cd "${srcdir}/${pkgname}-${pkgver}"
-    scons -j${_jval} DEBUG=1 --prefix=${pkgdir}/usr --actual-prefix=/usr --without-gui
-}
-
-check() {
-    cd "${srcdir}/${pkgname}-${pkgver}"
-    # backup binary
-    cp ./rmlint ./rmlint.backup
-    # Set rpath for tests that require the library to be 'installed'
-    patchelf --set-rpath '$ORIGIN' ./rmlint
-    LD_LIBRARY_PATH="${PWD}:$LD_LIBRARY_PATH" pytest tests -k 'not slow'
-    # restore original binary
-    mv ./rmlint.backup ./rmlint
-}
- 
-package() {
-    cd "${srcdir}/${pkgname}-${pkgver}"
-    scons DEBUG=1 --prefix=${pkgdir}/usr install --actual-prefix=/usr --without-gui
-    find "$pkgdir" -type f -name gschemas.compiled -delete
-}
-# vim:set ts=2 sw=2 et:
-
-==================================================
-PACKAGE: sourcegit-bin
-==================================================
-# Maintainer: Aikawa Yataro <aikawayataro at protonmail dot com>
-
-pkgname=sourcegit-bin
-_name=${pkgname%-bin}
-pkgver=2026.14
-pkgrel=1
-pkgdesc="GUI client for GIT users"
-arch=('x86_64')
-url='https://github.com/sourcegit-scm/sourcegit'
-license=('MIT')
-provides=('sourcegit')
-conflicts=('sourcegit')
-depends=('git' 'xdg-utils')
-optdepends=('git-credential-manager: third-party authentication support')
-makedepends=('desktop-file-utils')
-
-_debrev=1
-source=("https://github.com/sourcegit-scm/sourcegit/releases/download/v${pkgver}/${_name}_${pkgver}-${_debrev}_amd64.deb"
-    "${_name}_${pkgver}-LICENSE::https://raw.githubusercontent.com/sourcegit-scm/sourcegit/v${pkgver}/LICENSE")
-sha256sums=('68079689b66dbe0ec92a84a58178fef3d7066aadd918b58035f976fb9e710f26'
-            'ec746490472d7ae4317d257df27ea8077f68c6079b07f8ff32ac6ae12db9f32f')
-
-prepare() {
-    bsdtar -xf data.tar.gz
-
-    desktop-file-edit usr/share/applications/sourcegit.desktop \
-        --set-icon=sourcegit --set-key=Exec --set-value=sourcegit
-}
-
-package() {
-    install -d "$pkgdir/opt/$_name/"
-    install -d "$pkgdir/usr/bin/"
-
-    cp -r opt/sourcegit/* "$pkgdir/opt/$_name/"
-    ln -s "/opt/$_name/$_name" "$pkgdir/usr/bin/$_name"
-
-    install -Dm644 usr/share/icons/sourcegit.png "$pkgdir/usr/share/icons/hicolor/256x256/apps/$_name.png"
-    install -Dm644 usr/share/applications/sourcegit.desktop "$pkgdir/usr/share/applications/$_name.desktop"
-    install -Dm644 "${_name}_${pkgver}-LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
-}
-
-==================================================
-PACKAGE: thinkfan
-==================================================
-# Maintainer: Max Harmathy <harmathy@secure.mailbox.org>
-# Contributor: Barry Smith <brrtsm at gmail.com>
-# Contributor: nblock <nblock [/at\] archlinux DOT us>
-# Contributor: Frederik AlkÃ¦rsig (FALKER) <havnelisten AT gmail.com>
-
-pkgname=thinkfan
-pkgver=2.0.0
-pkgrel=3
-pkgdesc="A minimalist fan control program. Supports the sysfs hwmon interface and thinkpad_acpi"
-url="https://github.com/vmatare/thinkfan"
-arch=('i686' 'x86_64')
-makedepends=('cmake')
-depends=(
-  gcc-libs
-  glibc
-  libatasmart
-  lm_sensors
-  yaml-cpp
-)
-license=('GPL-3.0-or-later')
-source=("$pkgname-$pkgver.tar.gz::https://github.com/vmatare/$pkgname/archive/$pkgver.tar.gz"
-        'thinkfan.service'
-        'thinkpad_acpi.conf')
-sha256sums=('0fc94eb378dcba8c889e91f41dab3a8d6eebc7324a59a0704cc39aa66551987e'
-            '625730e33fae251f3a1cc8259b222089fb45ada08e9cf5c816ea1cde6560e989'
-            '28874576641b3cc1aa486e1bc9ed40eadfe8b13d6d3014016e31fedc5dc5195f')
-install=thinkfan.install
-
-build() {
-  cd "$srcdir/$pkgname-$pkgver"
-
-  cmake . -DCMAKE_INSTALL_PREFIX=/usr -DUSE_ATASMART:BOOL=ON
-  make
-}
-
-package() {
-  cd "$srcdir/$pkgname-$pkgver"
-
-  install -d -m755 "$pkgdir"/usr/{bin,lib/{modprobe.d,systemd/system},share/{doc/"$pkgname"/{,examples},man/man{1,5}}}
-  install -D -m755 "$pkgname" "$pkgdir"/usr/bin
-  install -D -m644 examples/* "$pkgdir"/usr/share/doc/"$pkgname"/examples
-  install -D -m644 "$pkgname".1 "$pkgdir"/usr/share/man/man1
-  install -D -m644 "$pkgname".conf.5 "$pkgdir"/usr/share/man/man5
-  install -D -m644 "$srcdir/$pkgname".service rcscripts/systemd/thinkfan-{sleep,wakeup}.service "$pkgdir"/usr/lib/systemd/system
-  install -D -m644 rcscripts/systemd/override.conf "$pkgdir"/usr/lib/systemd/system/thinkfan.service.d/override.conf
-  install -D -m644 "$srcdir"/thinkpad_acpi.conf "$pkgdir"/usr/lib/modprobe.d
-}
-
-# vim:set ts=2 sw=2 noet:
-
-==================================================
-PACKAGE: thinkfan-ui
-==================================================
-# Maintainer: zocker_160 <zocker1600 at posteo dot net>
-
-pkgname=thinkfan-ui
-pkgver=1.0.2
-pkgrel=1
-pkgdesc="A small gui app for Linux to control the fan speed and monitor temps on a ThinkPad"
-arch=('x86_64')
-url="https://github.com/zocker-160/thinkfan-ui"
-license=('GPL-3.0-only')
-depends=('python' 'python-pyqt6' 'qt6-svg' 'lm_sensors')
-makedepends=('git')
-#conflicts=('')
-source=("git+https://github.com/zocker-160/thinkfan-ui.git#tag=$pkgver")
-sha256sums=('SKIP')
-
-build() {
-  cd "$srcdir/$pkgname"
-  # nothing to see here
-}
-
-package() {
-  cd "$srcdir/$pkgname"
-
-  mkdir -p "$pkgdir/opt/$pkgname"
-  cp -r src/* "$pkgdir/opt/$pkgname"
-
-  install -D -m755 linux_packaging/thinkfan-ui -t "$pkgdir/usr/bin"
-  install -D -m644 linux_packaging/thinkfan-ui.svg -t "$pkgdir/usr/share/icons/hicolor/scalable/apps"
-  install -D -m644 linux_packaging/thinkfan-ui.desktop -t "$pkgdir/usr/share/applications"
-
-  install -D -m644 linux_packaging/modules-load.conf "$pkgdir/usr/lib/modules-load.d/$pkgname.conf"
-  install -D -m644 linux_packaging/thinkpad_acpi.conf "$pkgdir/usr/lib/modprobe.d/thinkpad_acpi_thinkfan_ui.conf"
-
-  # fix python version to prevent untracked pyc files
-  # force users to rebuild when Python version updates
-  local _pyver_major _pyver_minor
-  _pyver_major=$(python -c 'import sys; print(sys.version_info.major)')
-  _pyver_minor=$(python -c 'import sys; print(sys.version_info.minor)')
-
-  eval "depends+=(
-    'python>=${_pyver_major}.${_pyver_minor}'
-    'python<${_pyver_major}.$((_pyver_minor + 1))'
-  )"
-
-  # generate pyc files
-  python -m compileall -f -p / -s "$pkgdir" "$pkgdir/"
-}
-
-==================================================
-PACKAGE: timeshift-autosnap
-==================================================
-# Maintainer: Race D <git-noreply@mail.racedorsey.com>
-# Contributor: gobonja <gobonja@gmail.com>
-
-pkgname=timeshift-autosnap
-pkgver=0.10.0
-pkgrel=1
-pkgdesc="Timeshift auto-snapshot script which runs before package upgrade using Pacman hook."
-arch=("any")
-url="https://codeberg.org/racehd/timeshift-autosnap"
-license=('MIT')
-depends=('timeshift')
-optdepends=('grub-btrfs')
-source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/${pkgver}.tar.gz")
-backup=('etc/timeshift-autosnap.conf')
-b2sums=('ab7b3445b44973ee868d84049d13f010c481b331c4d6a23d31e085ae37a491a6d370b93f48abe3b17a18962ccbe92ef3ec65b613112348d13f9ca57e4339dfb1')
-
-package() {
-    cd ${srcdir}/${pkgname}
-    install -Dm644 00-timeshift-autosnap.hook ${pkgdir}/usr/share/libalpm/hooks/00-timeshift-autosnap.hook
-    install -Dm644 timeshift-autosnap.conf ${pkgdir}/etc/timeshift-autosnap.conf
-    install -Dm755 timeshift-autosnap ${pkgdir}/usr/bin/timeshift-autosnap
-    install -Dm644 LICENSE ${pkgdir}/usr/share/licenses/${pkgname}/LICENSE
-}
-
-==================================================
-PACKAGE: visual-studio-code-bin
-==================================================
-# Maintainer: D. Can Celasun <can[at]dcc[dot]im>
-
-pkgname=visual-studio-code-bin
-_pkgname=visual-studio-code
-pkgver=1.131.0
-pkgrel=1
-pkgdesc="Visual Studio Code (vscode): Editor for building and debugging modern web and cloud applications (official binary version)"
-arch=('x86_64' 'aarch64' 'armv7h')
-url="https://code.visualstudio.com/"
-license=('custom: commercial')
-provides=('code' 'vscode')
-conflicts=('code')
-# Upstream has signature verification for extensions and stripping breaks it
-# See https://github.com/microsoft/vscode/issues/223455#issuecomment-2610001754
-options=(!strip)
-install=$pkgname.install
-# lsof: needed for terminal splitting, see https://github.com/Microsoft/vscode/issues/62991
-# xdg-utils: needed for opening web links with xdg-open
-depends=(libxkbfile gnupg gtk3 libsecret nss gcc-libs libnotify libxss glibc lsof shared-mime-info xdg-utils alsa-lib)
-optdepends=('glib2: Needed for move to trash functionality'
-            'libdbusmenu-glib: Needed for KDE global menu'
-            'org.freedesktop.secrets: Needed for settings sync'
-             # See https://github.com/MicrosoftDocs/live-share/issues/4650
-            'icu69: Needed for live share' )
-source=(${_pkgname}-bin.sh)
-source_x86_64=(code_${pkgver}_amd64.deb::https://update.code.visualstudio.com/${pkgver}/linux-deb-x64/stable)
-source_aarch64=(code_${pkgver}_arm64.deb::https://update.code.visualstudio.com/${pkgver}/linux-deb-arm64/stable)
-source_armv7h=(code_${pkgver}_armhf.deb::https://update.code.visualstudio.com/${pkgver}/linux-deb-armhf/stable)
-sha256sums=('bd0d9edf69283ebdf4e73e0a7b168d2fcf50acbd01f63674cad93ed4fe42fdad')
-sha256sums_x86_64=('fe2ed2d94ccc694f49d9084846c0be78ba56c42810355fa3999160079bb53c9a')
-sha256sums_aarch64=('b57f73e4a8a4524bf2a796757f64bd7b594515dd8dabae9b8cd07b1beb204d9c')
-sha256sums_armv7h=('d52ffec8d83eabd500c795007ef3ac286277ff9a1ee014a2797dd215ad3cd4af')
-
-package() {
-  bsdtar -xf data.tar.xz -C "${pkgdir}/"
-
-  install -d "${pkgdir}/usr/bin"
-  install -d "${pkgdir}/usr/share/licenses/${pkgname}"
-
-  ln -s /usr/share/code/resources/app/LICENSE.rtf \
-    "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE.rtf"
-
-  # Launcher
-  install -m755 "${srcdir}/${_pkgname}-bin.sh" "${pkgdir}/usr/bin/code"
-
-  # Fix the desktop entries
-  sed -i \
-    -e 's/^\(Exec=\)[^ ]*/\1code/g' \
-    "${pkgdir}"/usr/share/applications/*.desktop
-
-  # setuid on chrome-sandbox
-  # Comment out if using a kernel without user namespaces, like linux-hardened
-  chmod u-s "${pkgdir}/usr/share/code/chrome-sandbox"
-}
-
-==================================================
-PACKAGE: yay
-==================================================
-# Maintainer: Jguer <pkgbuilds at jguer.space>
-pkgname=yay
-pkgver=13.0.1
-pkgrel=1
-pkgdesc="Yet another yogurt. Pacman wrapper and AUR helper written in go."
-arch=('i686' 'pentium4' 'x86_64' 'arm' 'armv7h' 'armv6h' 'aarch64' 'riscv64')
-url="https://github.com/Jguer/yay"
-options=(!lto)
-license=('GPL-3.0-or-later')
-depends=(
-  'pacman>6.1'
   'git'
+  'meson'
+  'valgrind'
 )
-optdepends=(
-  'sudo: privilege elevation'
-  'doas: privilege elevation'
+source=("git+https://gitlab.freedesktop.org/gstreamer/orc.git?signed#tag=$pkgver")
+b2sums=('9a8a076322f2d3933bd731f21b0bf5b7c0aeec4426fdaa92b8e74d625c495aab2a0f976a58cbc7e1fbbae901999c9f27088ea3bd2b5d024f4e079c4874484c74')
+validpgpkeys=(
+  'D637032E45B8C6585B9456565D2EEE6F6F349D7C' # Tim-Philipp Müller <tim@centricular.com>
 )
-makedepends=('go>=1.24')
-source=("${pkgname}-${pkgver}.tar.gz::https://github.com/Jguer/yay/archive/v${pkgver}.tar.gz")
-sha256sums=('b77454bce87110180a1b6664c2d260de78124c9894b71101610ba84f551eb0d0')
 
 build() {
-  export GOPATH="$srcdir"/gopath
-  export CGO_CPPFLAGS="${CPPFLAGS}"
-  export CGO_CFLAGS="${CFLAGS}"
-  export CGO_CXXFLAGS="${CXXFLAGS}"
-  export CGO_LDFLAGS="${LDFLAGS}"
-  export CGO_ENABLED=1
+  arch-meson orc build --cross-file lib32 -D hotdoc=disabled -D orc-target=avx,sse,mmx,altivec,neon,mips,c64x,riscv,lsx,lasx
+  meson compile -C build
+}
 
-  cd "$srcdir/$pkgname-$pkgver"
-  make VERSION=$pkgver DESTDIR="$pkgdir" PREFIX="/usr" build
+check() {
+  meson test -C build --print-errorlogs
 }
 
 package() {
-  cd "$srcdir/$pkgname-$pkgver"
-  make VERSION=$pkgver DESTDIR="$pkgdir" PREFIX="/usr" install
+  provides=(liborc{,-test}-${pkgver%.*}.so)
+
+  meson install -C build --destdir "$pkgdir"
+  rm -r "$pkgdir"/usr/{bin,include}
+  install -Dt "$pkgdir/usr/share/licenses/$pkgname" -m644 orc/COPYING
 }
+
+# vim:set sw=2 sts=-1 et:
 
 ==================================================
 PACKAGE: zotero-bin
@@ -1347,7 +474,7 @@ PACKAGE: zotero-bin
 # Contributor: Matthias Kurz <m.kurz@irregular.at>
 
 pkgname=zotero-bin
-pkgver=9.0.6
+pkgver=10.0.2
 pkgrel=1
 pkgdesc="Zotero Standalone. Is a free, easy-to-use tool to help you collect, organize, cite, and share your research sources."
 arch=('x86_64' 'i686' 'aarch64')
@@ -1358,9 +485,9 @@ provides=('zotero')
 conflicts=('zotero')
 
 sha256sums=('f727308716741cf9746b92047b890c3f76c4b8b010bc5ed21b5cdb1be85e21e9')
-sha256sums_x86_64=('0db6e8f94bd0d84e862e6ef5c3e217030e173c0cd3c6dfbc836252c650fea3dd')
-sha256sums_i686=('2cea60eaabac6df2b02bf84a3c7d0b11c98be3ef7b7793f0585e98d717c26762')
-sha256sums_aarch64=('5784ebc634387ae6dee1d4abc05ee0f73886c3ce444e2ea0956dd9f2972b4ec6')
+sha256sums_x86_64=('5f7ed486bf2daac703b905500dd8236b5b6982f7759f0699610ac926764b2a90')
+sha256sums_i686=('e3c1bb2e40eefaedcebacfbe96f37539fc9389a6b9c3e6d700da5957a1b92922')
+sha256sums_aarch64=('e8ab3673b53cb9efe25d19e2b0f16f0584357159eae951e52cf7ece341badcee')
 source=("zotero.desktop")
 source_x86_64=("Zotero-${pkgver}_linux_x86_64.tar.bz2::https://www.zotero.org/download/client/dl?channel=release&platform=linux-x86_64&version=${pkgver}")
 source_i686=("Zotero-${pkgver}_linux_i686.tar.bz2::https://www.zotero.org/download/client/dl?channel=release&platform=linux-i686&version=${pkgver}")
@@ -1385,8 +512,3 @@ package() {
   # No need to keep a shell around when launching Zotero
   sed -i -r 's/^("\$CALLDIR\/zotero-bin" -app "\$CALLDIR\/application.ini" "\$@")/exec \1/' "$pkgdir"/usr/lib/zotero/zotero
 }
-
-==================================================
-PACKAGE: zotero-bin-debug
-==================================================
-[!] Error fetching PKGBUILD. The package might be a split package or removed.
