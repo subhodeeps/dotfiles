@@ -29,8 +29,11 @@ backup_dir() {
     local name="${3:-$(basename "$src")}"
     
     if [ -d "$src" ]; then
+        mkdir -p "$dest"
         rm -rf "$dest/$(basename "$src")"
         cp -r "$src" "$dest"
+        # Remove nested .git folders, otherwise git stores them as empty gitlinks
+        find "$dest/$(basename "$src")" -name .git -prune -exec rm -rf {} + 2>/dev/null
         echo "✓ Copied $name config"
     else
         echo "! Skipping $name (Directory not found)"
@@ -115,7 +118,9 @@ ZOTERO_DIR="$BACKUP_DIR/zotero"
 mkdir -p "$ZOTERO_DIR"
 
 # Find the default profile directory (handles random string profile names)
-ZOTERO_PROFILE=$(find ~/.zotero/zotero -maxdepth 1 -type d -name "*.default*" | head -n 1)
+# Checks the native install first, then the Flathub version
+ZOTERO_PROFILE=$(find ~/.zotero/zotero ~/.var/app/org.zotero.Zotero/.zotero/zotero \
+    -maxdepth 1 -type d -name "*.default*" 2>/dev/null | head -n 1)
 
 if [ -n "$ZOTERO_PROFILE" ] && [ -d "$ZOTERO_PROFILE" ]; then
     # Back up main preferences
@@ -129,31 +134,63 @@ if [ -n "$ZOTERO_PROFILE" ] && [ -d "$ZOTERO_PROFILE" ]; then
         echo "  - No Zotero extensions found"
     fi
 else
-    echo "! Skipping Zotero (No profile found in ~/.zotero/zotero)"
+    echo "! Skipping Zotero (No profile found)"
+fi
+
+# Python venv specs (managed by ~/venvs/upgrade-numerics.sh)
+echo "Backing up venv specs..."
+VENV_ROOT=~/venvs
+VENV_SPEC_DIR="$BACKUP_DIR/venvs"
+
+if [ -d "$VENV_ROOT" ]; then
+    # Wipe the old copy so removed envs don't linger
+    rm -rf "$VENV_SPEC_DIR"
+    mkdir -p "$VENV_SPEC_DIR"
+
+    backup_file "$VENV_ROOT/upgrade-numerics.sh" "$VENV_SPEC_DIR/" "upgrade-numerics.sh"
+
+    # Each <env>.lock folder: requirements.in/.txt, uv.env, smoke.py (backups/ stays local)
+    for lock_dir in "$VENV_ROOT"/*.lock; do
+        [ -d "$lock_dir" ] || continue
+        lock_name=$(basename "$lock_dir")
+        mkdir -p "$VENV_SPEC_DIR/$lock_name"
+        for f in requirements.in requirements.txt uv.env smoke.py; do
+            if [ -f "$lock_dir/$f" ]; then
+                cp "$lock_dir/$f" "$VENV_SPEC_DIR/$lock_name/"
+            fi
+        done
+        echo "✓ Copied $lock_name specs"
+    done
+else
+    echo "! Skipping venv specs ($VENV_ROOT not found)"
 fi
 
 
 echo "User Dotfiles Backup complete! Ready to commit and push."
 
-# Define the new system configs directory
-SYS_DIR="$BACKUP_DIR/system-configs"
-
-# Wipe the old system config backup folder and recreate it for a clean slate
-rm -rf "$SYS_DIR"
-mkdir -p "$SYS_DIR"
-
-# README located in: $TMP_DIR/README_SYS.md
-
-README_TEMPLATE="$TMP_DIR/README_SYS.md"
-
-
-cp "$README_TEMPLATE" "$SYS_DIR/README.md"
-echo "✓ Copied system-configs/README.md from tmp/readme.md"
-
 echo "----------------------------------------------------"
 echo "Requesting sudo password to backup system configs..."
 sudo -v
 echo "----------------------------------------------------"
+
+# Define the new system configs directory
+SYS_DIR="$BACKUP_DIR/system-configs"
+
+# Wipe the old system config backup folder and recreate it for a clean slate
+# (sudo, because an interrupted earlier run can leave root-owned files behind)
+sudo rm -rf "$SYS_DIR"
+mkdir -p "$SYS_DIR"
+
+# README template: templates/ is tracked by git; tmp/ is only a fallback
+README_TEMPLATE="$BACKUP_DIR/templates/README_SYS.md"
+[ -f "$README_TEMPLATE" ] || README_TEMPLATE="$TMP_DIR/README_SYS.md"
+
+if [ -f "$README_TEMPLATE" ]; then
+    cp "$README_TEMPLATE" "$SYS_DIR/README.md"
+    echo "✓ Copied system-configs/README.md from ${README_TEMPLATE#"$BACKUP_DIR"/}"
+else
+    echo "! Skipping system-configs/README.md (README_SYS.md not found in templates/ or tmp/)"
+fi
 
 echo "Starting system config backup..."
 
@@ -169,7 +206,8 @@ sys_backup_file /etc/default/grub "$SYS_DIR/" "grub (fallback)"
 
 # Verify and back up systemd-boot (Primary)
 if command -v bootctl > /dev/null; then
-    ESP_PATH=$(bootctl -p 2>/dev/null)
+    # sudo: the ESP is often not readable by normal users
+    ESP_PATH=$(sudo bootctl -p 2>/dev/null)
     
     if [ -n "$ESP_PATH" ] && sudo test -d "$ESP_PATH/loader"; then
         sys_backup_dir "$ESP_PATH/loader" "$SYS_DIR" "systemd-boot loader"
@@ -210,18 +248,42 @@ sys_backup_file /etc/thinkfan.conf "$SYS_DIR/" "thinkfan.conf"
 # Package Manifests
 echo "Generating package lists..."
 
-# Official Repo Packages
 if command -v pacman > /dev/null; then
-    pacman -Qqe > "$SYS_DIR/pkglist-official.txt"
+    # Official Repo Packages (native only, so the list restores with pacman -S)
+    pacman -Qqen > "$SYS_DIR/pkglist-official.txt"
     echo "✓ Generated pkglist-official.txt"
+
+    # AUR / foreign packages
+    pacman -Qqem > "$SYS_DIR/pkglist-aur.txt"
+    echo "✓ Generated pkglist-aur.txt"
 fi
 
-# AUR Packages (requires expac)
-if command -v expac > /dev/null; then
-    expac -Qe "$(pacman -Qmq)" > "$SYS_DIR/pkglist-aur.txt" 2>/dev/null
-    echo "✓ Generated pkglist-aur.txt"
+# Flatpak Apps (Flathub and any other remotes)
+if command -v flatpak > /dev/null; then
+    FLATPAK_DIR="$SYS_DIR/flatpak"
+    mkdir -p "$FLATPAK_DIR"
+
+    echo "Backing up Flatpak apps..."
+
+    for scope in system user; do
+        # App ID + origin remote; runtimes are pulled in again on reinstall
+        flatpak list --$scope --app --columns=application,origin > "$FLATPAK_DIR/apps-$scope.txt" 2>/dev/null
+        flatpak remotes --$scope --columns=name,url > "$FLATPAK_DIR/remotes-$scope.txt" 2>/dev/null
+
+        if [ -s "$FLATPAK_DIR/apps-$scope.txt" ]; then
+            echo "  ✓ Captured $scope Flatpak apps"
+        else
+            rm -f "$FLATPAK_DIR/apps-$scope.txt"
+            echo "  - No $scope Flatpak apps found"
+        fi
+        [ -s "$FLATPAK_DIR/remotes-$scope.txt" ] || rm -f "$FLATPAK_DIR/remotes-$scope.txt"
+    done
+
+    # Permission overrides (Flatseal / flatpak override)
+    backup_dir ~/.local/share/flatpak/overrides "$FLATPAK_DIR/user" "Flatpak user overrides"
+    backup_dir /var/lib/flatpak/overrides "$FLATPAK_DIR/system" "Flatpak system overrides"
 else
-    echo "! Skipping AUR list (expac not installed)"
+    echo "! Skipping Flatpak (flatpak not installed)"
 fi
 
 # Python Environments Manifest
@@ -259,10 +321,11 @@ fi
 
 # Find all venv folders 
 find ~ -maxdepth 3 -name "pyvenv.cfg" -exec dirname {} \; | while read -r venv_path; do
-    parent_dir=$(basename "$(dirname "$venv_path")")
+    parent_path=$(dirname "$venv_path")
+    parent_dir=$(basename "$parent_path")
     venv_name=$(basename "$venv_path")
     
-    if [[ "$parent_dir" == "$HOME" || "$parent_dir" == "/" ]]; then
+    if [[ "$parent_path" == "$HOME" ]]; then
         env_label="$venv_name"
     else
         env_label="${parent_dir}_${venv_name}"
@@ -270,17 +333,30 @@ find ~ -maxdepth 3 -name "pyvenv.cfg" -exec dirname {} \; | while read -r venv_p
     
     echo "  Exporting $env_label..."
     
-    if [ -f "$venv_path/bin/python" ]; then
+    if "$venv_path/bin/python" -c 'import sys' 2>/dev/null; then
         "$venv_path/bin/python" --version > "$ENV_DIR/$env_label-version.txt"
-        "$venv_path/bin/pip" list --format=freeze > "$ENV_DIR/$env_label-requirements.txt"
+
+        # uv works even without pip in the venv, and keeps git/editable sources
+        if command -v uv > /dev/null; then
+            uv pip freeze --python "$venv_path/bin/python" > "$ENV_DIR/$env_label-requirements.txt" 2>/dev/null
+        else
+            "$venv_path/bin/python" -m pip freeze > "$ENV_DIR/$env_label-requirements.txt"
+        fi
+
+        # juliacall keeps its Julia project inside the venv
+        if [ -f "$venv_path/julia_env/Project.toml" ]; then
+            mkdir -p "$ENV_DIR/$env_label-julia_env"
+            cp "$venv_path"/julia_env/*.toml "$ENV_DIR/$env_label-julia_env/"
+            echo "  ✓ Captured $env_label julia_env"
+        fi
     else
-        echo "  ! Skipping $env_label (No python executable found)"
+        echo "  ! Skipping $env_label (Python missing or broken)"
     fi
 done
 
 # Conda Environments
 if command -v conda > /dev/null; then
-    conda env list | cut -d' ' -f1 | grep -v '^#' | while read -r env_name; do
+    conda env list | awk 'NF && $1 !~ /^#/ {print $1}' | while read -r env_name; do
         conda list -n "$env_name" --export > "$ENV_DIR/conda-$env_name.txt"
         echo "  ✓ Captured conda env: $env_name"
     done
@@ -308,7 +384,7 @@ fi
 backup_file ~/.config/mimeapps.list "$BACKUP_DIR/" "mimeapps.list"
 
 # Fix ownership for files copied via sudo to ensure standard user ownership
-sudo chown -R "$USER:$USER" "$SYS_DIR"
+sudo chown -R "$USER:$(id -gn)" "$SYS_DIR"
 
 # Make sure the scratch/staging tmp/ folder never gets committed to the dotfiles repo
 GITIGNORE="$BACKUP_DIR/.gitignore"

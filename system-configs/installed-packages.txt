@@ -82,17 +82,13 @@ lact
 lib32-aalib
 lib32-cdparanoia
 lib32-giflib
-lib32-gst-plugins-base-libs
 lib32-gtk3
 lib32-jack2
 lib32-libavc1394
 lib32-libcaca
-lib32-libdv
-lib32-libiec61883
 lib32-libjpeg-turbo
 lib32-libpulse
 lib32-libraw1394
-lib32-libshout
 lib32-libsoup3
 lib32-libtheora
 lib32-libvpx
@@ -104,11 +100,8 @@ lib32-ocl-icd
 lib32-openal
 lib32-rust-libs
 lib32-sdl2-compat
-lib32-speex
-lib32-taglib
 lib32-twolame
 lib32-v4l-utils
-lib32-wavpack
 libbacktrace
 libfprint
 libva-nvidia-driver
@@ -215,6 +208,7 @@ ttf-jetbrains-mono-nerd
 ufw
 unarchiver
 unrar
+uv
 virtualgl
 vlc
 vlc-plugin-ffmpeg
