@@ -48,6 +48,7 @@ git-lfs
 glances
 glib2-devel
 glow
+google-chrome
 gparted
 graphviz
 grub

@@ -1,4 +1,5 @@
 caffeine-ng
+google-chrome
 juliaup
 lib32-aalib
 lib32-cdparanoia

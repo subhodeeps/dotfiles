@@ -144,3 +144,8 @@ source <(fzf --zsh)
 eval "$(starship init zsh)"
 
 
+export PATH="$HOME/.local/bin:$PATH"
+
+
+# Added by Antigravity CLI installer
+export PATH="/home/subhodeep/.local/bin:$PATH"
