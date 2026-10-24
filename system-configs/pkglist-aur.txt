@@ -1,6 +1,8 @@
 caffeine-ng
 google-chrome
 juliaup
+kgamma
+kwin-x11
 lib32-aalib
 lib32-cdparanoia
 lib32-giflib

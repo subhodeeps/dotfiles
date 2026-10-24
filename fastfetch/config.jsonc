@@ -59,7 +59,7 @@
             "type": "command",
             "key": " Root Age ",
             "keyColor": "yellow",
-            "text": "stat -c %W / | awk '{ if ($1==0) print \"Unknown\"; else { days=int((systime()-$1)/86400); print strftime(\"%Y-%m-%d\",$1), \"(\"days\" days)\" }}'"
+            "text": "if [ \"$(uname)\" = Darwin ]; then b=$(stat -f %B /var/db/.AppleSetupDone 2>/dev/null); d=$(date -r \"$b\" +%Y-%m-%d 2>/dev/null); else b=$(stat -c %W / 2>/dev/null); d=$(date -d \"@$b\" +%Y-%m-%d 2>/dev/null); fi; if [ \"${b:-0}\" -gt 0 ] 2>/dev/null; then echo \"$d ($(( ($(date +%s) - b) / 86400 )) days)\"; else echo Unknown; fi"
         },
         {
             "type": "custom",
@@ -80,7 +80,7 @@
             "type": "command",
             "key": " GCC      ",
             "keyColor": "green",
-            "text": "gcc -dumpfullversion 2>/dev/null || echo 'Not Installed'"
+            "text": "v=; if [ \"$(uname)\" != Darwin ] || xcode-select -p >/dev/null 2>&1; then v=$(gcc --version 2>/dev/null | sed -n 's/^\\(.*clang\\) version \\([^ ]*\\).*/\\1 \\2/p' | head -n 1); [ -n \"$v\" ] || v=$(gcc -dumpfullversion 2>/dev/null); fi; echo \"${v:-Not Installed}\""
         },
         {
             "type": "command",
@@ -92,13 +92,13 @@
             "type": "command",
             "key": " Julia    ",
             "keyColor": "green",
-            "text": "julia --version 2>&1 | awk '{print $3}'"
+            "text": "v=$(julia --version 2>/dev/null | sed -n 's/^julia version \\([^ ]*\\).*/\\1/p' | head -n 1); echo \"${v:-Not Installed}\""
         },
         {
             "type": "command",
             "key": " Wolfram  ",
             "keyColor": "green",
-            "text": "math -version 2>&1"
+            "text": "p='1s/^([0-9]+(\\.[0-9]+){0,2}).*/\\1/p'; v=; for a in /Applications/Wolfram.app /Applications/Mathematica.app \"/Applications/Wolfram Engine.app\" \"$HOME/Applications/Wolfram.app\" \"$HOME/Applications/Mathematica.app\"; do [ -d \"$a\" ] || continue; v=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' \"$a/Contents/Info.plist\" 2>/dev/null | sed -nE \"$p\"); [ -n \"$v\" ] || v=$(\"$a/Contents/MacOS/wolfram\" -version </dev/null 2>/dev/null | sed -nE \"$p\"); [ -n \"$v\" ] && break; done; [ -n \"$v\" ] || for k in wolfram math; do command -v \"$k\" >/dev/null 2>&1 && v=$(\"$k\" -version </dev/null 2>/dev/null | sed -nE \"$p\") && [ -n \"$v\" ] && break; done; echo \"${v:-Not Installed}\""
         },
         {
             "type": "custom",
